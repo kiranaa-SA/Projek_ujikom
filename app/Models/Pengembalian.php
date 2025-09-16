@@ -8,18 +8,12 @@ class Pengembalian extends Model
 {
     use HasFactory;
 
-    protected $table = 'pengembalians';
-
     protected $fillable = [
-        'peminjaman_id',
-        'tanggal_pengembalian',
-        'terlambat',
-        'kondisi',
-        'denda', // kolom denda tetap diisi otomatis
+        'peminjaman_id', 'tanggal_pengembalian', 'terlambat', 'kondisi', 'denda',
     ];
 
     public function peminjaman()
     {
-        return $this->belongsTo(Peminjaman::class, 'peminjaman_id');
+        return $this->belongsTo(Peminjaman::class);
     }
 }

@@ -1,0 +1,144 @@
+@extends('layouts.backend')
+
+@section('title', 'Petugas Perpus - Edit Buku')
+
+@section('content')
+<div class="container py-4">
+    <div class="card shadow-sm">
+        {{-- Header --}}
+        <div class="card-header" style="background-color: #457de4; color: white;">
+            <h3 class="mb-0">Edit Buku</h3>
+        </div>
+
+        {{-- Body --}}
+        <div class="card-body">
+            {{-- Error Alert --}}
+            @if ($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Ups!</strong> Ada beberapa masalah dengan inputan kamu.
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
+            {{-- Form --}}
+            <form action="{{ route('petugas.bukus.update', $buku->id) }}" method="POST" enctype="multipart/form-data" class="p-3">
+                @csrf
+                @method('PUT')
+
+                <div class="mb-3">
+                    <label for="kode_buku" class="form-label fw-semibold">Kode Buku</label>
+                    <input type="text" name="kode_buku" id="kode_buku" 
+                           class="form-control @error('kode_buku') is-invalid @enderror"
+                           value="{{ old('kode_buku', $buku->kode_buku) }}" required>
+                    @error('kode_buku')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label for="judul" class="form-label fw-semibold">Judul</label>
+                    <input type="text" name="judul" id="judul" 
+                           class="form-control @error('judul') is-invalid @enderror"
+                           value="{{ old('judul', $buku->judul) }}" required>
+                    @error('judul')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label for="penulis" class="form-label fw-semibold">Penulis</label>
+                    <input type="text" name="penulis" id="penulis" 
+                           class="form-control @error('penulis') is-invalid @enderror"
+                           value="{{ old('penulis', $buku->penulis) }}" required>
+                    @error('penulis')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label for="penerbit" class="form-label fw-semibold">Penerbit</label>
+                    <input type="text" name="penerbit" id="penerbit" 
+                           class="form-control @error('penerbit') is-invalid @enderror"
+                           value="{{ old('penerbit', $buku->penerbit) }}" required>
+                    @error('penerbit')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label for="tahun_terbit" class="form-label fw-semibold">Tahun Terbit</label>
+                    <input type="number" name="tahun_terbit" id="tahun_terbit" 
+                           class="form-control @error('tahun_terbit') is-invalid @enderror"
+                           value="{{ old('tahun_terbit', $buku->tahun_terbit) }}" required>
+                    @error('tahun_terbit')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label for="stok" class="form-label fw-semibold">Stok</label>
+                    <input type="number" name="stok" id="stok" 
+                           class="form-control @error('stok') is-invalid @enderror"
+                           value="{{ old('stok', $buku->stok) }}" required>
+                    @error('stok')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label for="rak_id" class="form-label fw-semibold">Rak</label>
+                    <select name="rak_id" id="rak_id" class="form-select @error('rak_id') is-invalid @enderror" required>
+                        <option value="">-- Pilih Rak --</option>
+                        @foreach($raks as $rak)
+                            <option value="{{ $rak->id }}" {{ old('rak_id', $buku->rak_id) == $rak->id ? 'selected' : '' }}>
+                                {{ $rak->nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('rak_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label for="kategori_id" class="form-label fw-semibold">Kategori</label>
+                    <select name="kategori_id" id="kategori_id" class="form-select @error('kategori_id') is-invalid @enderror" required>
+                        <option value="">-- Pilih Kategori --</option>
+                        @foreach($kategoris as $kategori)
+                            <option value="{{ $kategori->id }}" {{ old('kategori_id', $buku->kategori_id) == $kategori->id ? 'selected' : '' }}>
+                                {{ $kategori->nama_kategori }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('kategori_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label for="gambar" class="form-label fw-semibold">Gambar</label>
+                    <input type="file" name="gambar" id="gambar" class="form-control @error('gambar') is-invalid @enderror">
+                    @if ($buku->gambar)
+                        <div class="mt-2">
+                            <img src="{{ asset('storage/' . $buku->gambar) }}" alt="Gambar Buku" width="120" class="img-thumbnail">
+                        </div>
+                    @endif
+                    @error('gambar')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary me-2">Update</button>
+                    <a href="{{ route('petugas.bukus.index') }}" class="btn btn-secondary">Kembali</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection

@@ -9,22 +9,21 @@ class RoleMiddleware
     public function handle($request, Closure $next, ...$roles)
     {
         if (! Auth::check()) {
-            return redirect('/login');
+            return redirect()->route('login');
         }
 
         $userRole = Auth::user()->role;
 
-        // ✅ Kalau admin, full akses (tanpa cek roles)
+        // Admin selalu bisa
         if ($userRole === 'admin') {
             return $next($request);
         }
 
-        // ✅ Kalau role user sesuai dengan yang diminta
-        if (in_array($userRole, $roles)) {
+        // Cek role lain
+        if (! empty($roles) && in_array($userRole, $roles)) {
             return $next($request);
         }
 
-        // ❌ Kalau tidak sesuai, forbidden
         abort(403, 'Anda tidak punya akses ke halaman ini.');
     }
 }

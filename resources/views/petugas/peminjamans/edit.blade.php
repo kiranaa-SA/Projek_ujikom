@@ -1,0 +1,106 @@
+@extends('layouts.backend')
+
+@section('title', 'Petugas Perpus - Edit Peminjaman')
+
+@section('content')
+<div class="container py-4">
+    <div class="card shadow-sm">
+        {{-- Header --}}
+        <div class="card-header" style="background-color: #457de4; color: white;">
+            <h3 class="mb-0">Edit Peminjaman</h3>
+        </div>
+
+        {{-- Body --}}
+        <div class="card-body">
+            {{-- Error Alert --}}
+            @if ($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Ups!</strong> Ada beberapa masalah dengan inputan kamu.
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
+            {{-- Form --}}
+            <form action="{{ route('petugas.peminjamans.update', $peminjaman->id) }}" method="POST" class="p-3 border rounded bg-light shadow-sm">
+                @csrf
+                @method('PUT')
+
+                <div class="mb-3">
+                    <label for="user_id" class="form-label fw-semibold">User</label>
+                    <select name="user_id" id="user_id" 
+                            class="form-select @error('user_id') is-invalid @enderror" required>
+                        <option value="">-- Pilih User --</option>
+                        @foreach($users as $user)
+                            <option value="{{ $user->id }}" {{ (old('user_id', $peminjaman->user_id) == $user->id) ? 'selected' : '' }}>
+                                {{ $user->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('user_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label for="buku_id" class="form-label fw-semibold">Buku</label>
+                    <select name="buku_id" id="buku_id" 
+                            class="form-select @error('buku_id') is-invalid @enderror" required>
+                        <option value="">-- Pilih Buku --</option>
+                        @foreach($bukus as $buku)
+                            <option value="{{ $buku->id }}" {{ (old('buku_id', $peminjaman->buku_id) == $buku->id) ? 'selected' : '' }}>
+                                {{ $buku->judul }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('buku_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label for="tanggal_pinjam" class="form-label fw-semibold">Tanggal Pinjam</label>
+                    <input type="date" name="tanggal_pinjam" id="tanggal_pinjam" 
+                           class="form-control @error('tanggal_pinjam') is-invalid @enderror"
+                           value="{{ old('tanggal_pinjam', $peminjaman->tanggal_pinjam) }}" required>
+                    @error('tanggal_pinjam')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                {{-- Kalau ada field tanggal_kembali di DB --}}
+                <div class="mb-3">
+                    <label for="tanggal_kembali" class="form-label fw-semibold">Tanggal Kembali</label>
+                    <input type="date" name="tanggal_kembali" id="tanggal_kembali" 
+                           class="form-control @error('tanggal_kembali') is-invalid @enderror"
+                           value="{{ old('tanggal_kembali', $peminjaman->tanggal_kembali) }}">
+                    @error('tanggal_kembali')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label for="status" class="form-label fw-semibold">Status</label>
+                    <select name="status" id="status" 
+                            class="form-select @error('status') is-invalid @enderror" required>
+                        <option value="dipinjam" {{ old('status', $peminjaman->status) == 'dipinjam' ? 'selected' : '' }}>Dipinjam</option>
+                        <option value="dikembalikan" {{ old('status', $peminjaman->status) == 'dikembalikan' ? 'selected' : '' }}>Dikembalikan</option>
+                    </select>
+                    @error('status')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary me-2">Update</button>
+                    <a href="{{ route('petugas.peminjamans.index') }}" class="btn btn-secondary">Batal</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection

@@ -8,14 +8,13 @@ class Peminjaman extends Model
 {
     use HasFactory;
 
-    protected $table = 'peminjamans';
+    protected $table = 'peminjamans'; // 👈 pastikan sesuai nama tabel di migration
 
     protected $fillable = [
         'user_id',
         'buku_id',
         'tanggal_pinjam',
         'tenggat_tempo',
-        'status',
     ];
 
     public function user()
@@ -28,8 +27,8 @@ class Peminjaman extends Model
         return $this->belongsTo(Buku::class);
     }
 
-    public function pengembalians()
+    public function pengembalian()
     {
-        return $this->hasMany(Pengembalian::class, 'peminjaman_id');
+        return $this->hasOne(Pengembalian::class);
     }
 }

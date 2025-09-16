@@ -1,37 +1,41 @@
 <?php
 
+use App\Http\Controllers\Admin\BukuController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DendaController;
+use App\Http\Controllers\Admin\KategoriController;
+use App\Http\Controllers\Admin\LaporanController;
+use App\Http\Controllers\Admin\PeminjamanController;
+use App\Http\Controllers\Admin\PengembalianController;
+use App\Http\Controllers\Admin\RakController;
+use App\Http\Controllers\Admin\UserrController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\BukuController;
-use App\Http\Controllers\DendaController;
-use App\Http\Controllers\KategoriController;
-use App\Http\Controllers\PeminjamanController;
-use App\Http\Controllers\PengembalianController;
-use App\Http\Controllers\RakController;
+use App\Http\Controllers\Petugas\BukuController as PetugasBukuController;
+use App\Http\Controllers\Petugas\DashboardController as PetugasDashboardController;
+use App\Http\Controllers\Petugas\DendaController as PetugasDendaController;
+use App\Http\Controllers\Petugas\PeminjamanController as PetugasPeminjamanController;
+use App\Http\Controllers\Petugas\PengembalianController as PetugasPengembalianController;
 use Illuminate\Support\Facades\Route;
 
-// ============================
+// ===================
 // LANDING PAGE
-// ============================
-Route::get('/', function () {
-    return view('welcome');
-});
+// ===================
+Route::get('/', fn() => view('welcome'));
+Route::get('/home', fn() => view('home'))->name('home');
 
-// Dashboard / Home
-Route::get('/home', function () {
-    return view('home'); // pastikan ada resources/views/home.blade.php
-})->name('home');
-
-// ============================
+// ===================
 // AUTH ROUTES
-// ============================
+// ===================
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// ============================
-// ADMIN (semua bisa diakses)
-// ============================
-Route::middleware(['auth', 'role:admin'])->group(function () {
+// ===================
+// ADMIN
+// ===================
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
     Route::resources([
         'kategoris'     => KategoriController::class,
         'raks'          => RakController::class,
@@ -39,25 +43,36 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         'peminjamans'   => PeminjamanController::class,
         'pengembalians' => PengembalianController::class,
         'dendas'        => DendaController::class,
+        'userrs'        => UserrController::class,
     ]);
+
+    // Laporan
+    Route::get('laporans', [LaporanController::class, 'index'])->name('laporans.index');
+
+    // Export PDF (filter otomatis ikut query params)
+    Route::get('laporans/export-pdf', [LaporanController::class, 'exportPdf'])
+        ->name('laporans.exportPdf');
 });
 
-// ============================
-// PETUGAS (hanya buku, peminjaman, pengembalian, denda)
-// ============================
-Route::middleware(['auth', 'role:petugas'])->group(function () {
+// ===================
+// PETUGAS
+// ===================
+Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')->group(function () {
+    Route::get('/', [PetugasDashboardController::class, 'index'])->name('dashboard');
+
     Route::resources([
-        'bukus'         => BukuController::class,
-        'peminjamans'   => PeminjamanController::class,
-        'pengembalians' => PengembalianController::class,
-        'dendas'        => DendaController::class,
+        'bukus'         => PetugasBukuController::class,
+        'peminjamans'   => PetugasPeminjamanController::class,
+        'pengembalians' => PetugasPengembalianController::class,
+        'dendas'        => PetugasDendaController::class,
     ]);
 });
 
-// ============================
-// SISWA (hanya lihat buku / index & show)
-// ============================
-Route::middleware(['auth', 'role:siswa'])->group(function () {
-    Route::get('bukus', [BukuController::class, 'index'])->name('bukus.index');
-    Route::get('bukus/{buku}', [BukuController::class, 'show'])->name('bukus.show');
+// ===================
+// SISWA
+// ===================
+Route::middleware(['auth', 'role:siswa'])->prefix('siswa')->name('siswa.')->group(function () {
+    Route::get('/', fn() => redirect()->route('siswa.bukus.index'))->name('dashboard');
+    Route::get('bukus', [PetugasBukuController::class, 'index'])->name('bukus.index');
+    Route::get('bukus/{buku}', [PetugasBukuController::class, 'show'])->name('bukus.show');
 });

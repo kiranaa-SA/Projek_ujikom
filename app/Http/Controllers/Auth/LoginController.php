@@ -2,70 +2,39 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
 {
+    use AuthenticatesUsers;
+
     /**
-     * Tampilkan form login.
+     * Redirect user after login based on role.
+     *
+     * @return string
      */
-    public function showLoginForm()
+    protected function redirectTo()
     {
-        return view('auth.login'); // pastikan ada resources/views/auth/login.blade.php
+        $role = auth()->user()->role;
+
+        switch ($role) {
+            case 'admin':
+                return route('admin.dashboard'); // redirect ke admin dashboard
+            case 'petugas':
+                return route('petugas.dashboard'); // redirect ke petugas dashboard
+            case 'siswa':
+                return route('siswa.dashboard'); // redirect ke siswa dashboard
+            default:
+                return '/home'; // fallback
+        }
     }
 
     /**
-     * Proses login user.
+     * Create a new controller instance.
      */
-    public function login(Request $request)
+    public function __construct()
     {
-        $credentials = $request->validate([
-            'email'    => ['required', 'email'],
-            'password' => ['required'],
-        ]);
-
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-
-            return $this->redirectBasedOnRole(Auth::user());
-        }
-
-        return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ])->onlyInput('email');
-    }
-
-    /**
-     * Logout user.
-     */
-    public function logout(Request $request)
-    {
-        Auth::logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect('/');
-    }
-
-    /**
-     * Redirect user sesuai role.
-     */
-    protected function redirectBasedOnRole($user)
-    {
-        if ($user->role === 'admin') {
-            return redirect('/kategoris'); // admin ke kategori
-        }
-
-        if ($user->role === 'petugas') {
-            return redirect('/bukus'); // petugas ke buku
-        }
-
-        if ($user->role === 'siswa') {
-            return redirect('/bukus'); // siswa juga ke buku
-        }
-
-        return redirect('/home'); // fallback
+        $this->middleware('guest')->except('logout');
+        $this->middleware('auth')->only('logout');
     }
 }
