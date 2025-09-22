@@ -25,11 +25,11 @@
         </thead>
         <tbody>
             @forelse($laporans as $laporan)
-            <tr>
+           <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $laporan->tanggal_pinjam ?? '-' }}</td>
                 <td>{{ $laporan->buku?->judul ?? '-' }}</td>
-                <td>{{ $laporan->pengembalian?->tanggal_kembali ?? '-' }}</td>
+                <td>{{ $laporan->pengembalian?->tanggal_pengembalian ?? '-' }}</td>
                 <td>{{ ucfirst($laporan->pengembalian?->kondisi ?? '-') }}</td>
             </tr>
             @empty

@@ -42,8 +42,8 @@
         {{-- ADMIN MENU --}}
         @if(Auth::user()->role == 'admin')
           <li class="sidebar-item">
-            <a class="sidebar-link {{ request()->routeIs('admin.userrs.*') ? 'active' : '' }}" 
-               href="{{ route('admin.userrs.index') }}">
+            <a class="sidebar-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" 
+               href="{{ route('admin.users.index') }}">
               <span><i class="ti ti-users"></i></span>
               <span class="hide-menu">User</span>
             </a>

@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller; 
+use App\Http\Controllers\Controller;
 use App\Models\Rak;
 use Illuminate\Http\Request;
 
@@ -29,15 +29,9 @@ class RakController extends Controller
             'lokasi' => 'required|max:100',
         ]);
 
-        Rak::create($request->all());
+        Rak::create($request->only(['kode', 'nama', 'lokasi']));
 
         return redirect()->route('admin.raks.index')->with('success', 'Rak berhasil ditambahkan');
-    }
-
-    // Tampilkan detail rak
-    public function show(Rak $rak)
-    {
-        return view('admin.raks.show', compact('rak'));
     }
 
     // Form edit rak
@@ -55,7 +49,7 @@ class RakController extends Controller
             'lokasi' => 'required|max:100',
         ]);
 
-        $rak->update($request->all());
+        $rak->update($request->only(['kode', 'nama', 'lokasi']));
 
         return redirect()->route('admin.raks.index')->with('success', 'Rak berhasil diupdate');
     }
@@ -65,5 +59,11 @@ class RakController extends Controller
     {
         $rak->delete();
         return redirect()->route('admin.raks.index')->with('success', 'Rak berhasil dihapus');
+    }
+
+    // Detail rak
+    public function show(Rak $rak)
+    {
+        return view('admin.raks.show', compact('rak'));
     }
 }

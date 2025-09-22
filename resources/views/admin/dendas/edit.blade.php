@@ -5,9 +5,12 @@
 @section('content')
 <div class="container py-4">
     <div class="card shadow-sm">
-        <div class="card-header" style="background-color: #457de4; color: white;">
-            <h3 class="mb-0">Edit Denda</h3>
+        {{-- Card header --}}
+        <div class="card-header" style="background-color: #457de4;">
+            <h3 class="mb-0 text-white">Edit Denda</h3>
         </div>
+
+        {{-- Card body --}}
         <div class="card-body">
             <form action="{{ route('admin.dendas.update', $denda->id) }}" method="POST">
                 @csrf
@@ -43,4 +46,17 @@
                     <label for="status" class="form-label">Status</label>
                     <select name="status" id="status" class="form-select @error('status') is-invalid @enderror" required>
                         <option value="belum_dibayar" {{ $denda->status=='belum_dibayar' ? 'selected' : '' }}>Belum Lunas</option>
-                        <option value="lunas"
+                        <option value="lunas" {{ $denda->status=='lunas' ? 'selected' : '' }}>Lunas</option>
+                    </select>
+                    @error('status')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <button type="submit" class="btn" style="background-color: #1d37df; color: white;">Simpan</button>
+                <a href="{{ route('admin.dendas.index') }}" class="btn btn-secondary">Batal</a>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection

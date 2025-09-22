@@ -4,16 +4,13 @@
 
 @section('content')
 <div class="container py-4">
-    {{-- Card utama --}}
     <div class="card shadow-sm">
-        {{-- Card header --}}
-        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4; color: white;">
-            <h3 class="mb-0">Daftar Buku</h3>
+        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4;">
+            <h3 class="mb-0 text-white">Daftar Buku</h3>
             <a href="{{ route('petugas.bukus.create') }}" class="btn" style="background-color: #1d37df; color: white; border: none;">
-                <i class="bi bi-plus-lg"></i> Tambah Data
+                Tambah Data
             </a>
         </div>
-
         <div class="card-body">
             @if(session('success'))
                 <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
@@ -24,18 +21,15 @@
 
             <div class="table-responsive">
                 <table class="table table-bordered align-middle text-center mb-0">
-                    <thead>
+                    <thead style="background-color: #e3f2fd; color: #212529;">
                         <tr>
                             <th>No</th>
                             <th>Kode Buku</th>
                             <th>Judul</th>
+                            <th>Deskripsi</th>
                             <th>Penulis</th>
-                            <th>Penerbit</th>
-                            <th>Tahun</th>
-                            <th>Stok</th>
-                            <th>Rak</th>
-                            <th>Kategori</th>
-                            <th>Gambar</th>
+                            <th>Tahun Terbit</th>
+                            <th>Gambar</th> {{-- Pindah ke sini --}}
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -45,26 +39,14 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $buku->kode_buku }}</td>
                             <td>{{ $buku->judul }}</td>
+                            <td class="text-start">{{ Str::limit($buku->deskripsi, 50, '...') }}</td>
                             <td>{{ $buku->penulis }}</td>
-                            <td>{{ $buku->penerbit }}</td>
                             <td>{{ $buku->tahun_terbit }}</td>
                             <td>
-                                @if($buku->stok > 5)
-                                    <span class="badge bg-success">{{ $buku->stok }}</span>
-                                @elseif($buku->stok > 0)
-                                    <span class="badge bg-warning text-dark">{{ $buku->stok }}</span>
-                                @else
-                                    <span class="badge bg-danger">Habis</span>
-                                @endif
-                            </td>
-                            <td>{{ $buku->rak->nama }}</td>
-                            <td>{{ $buku->kategori->nama_kategori }}</td>
-                            <td>
                                 @if($buku->gambar)
-                                    <img src="{{ asset('storage/' . $buku->gambar) }}" 
-                                         alt="Gambar Buku" class="img-thumbnail" width="60">
+                                    <img src="{{ asset('storage/' . $buku->gambar) }}" alt="{{ $buku->judul }}" width="60">
                                 @else
-                                    <span class="text-muted">-</span>
+                                    <span class="text-muted">Tidak ada</span>
                                 @endif
                             </td>
                             <td class="text-nowrap">
@@ -85,7 +67,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="11" class="text-center text-muted py-4">Belum ada data buku</td>
+                            <td colspan="8" class="text-center text-muted py-4">Belum ada data buku</td>
                         </tr>
                         @endforelse
                     </tbody>

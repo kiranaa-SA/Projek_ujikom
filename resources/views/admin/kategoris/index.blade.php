@@ -7,11 +7,12 @@
     {{-- Card utama --}}
     <div class="card shadow-sm">
         {{-- Card header --}}
-        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4; color: white;">
-            <h3 class="mb-0">Daftar Kategori</h3>
+        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4;">
+            <h3 class="mb-0 text-white">Daftar Kategori</h3>
             <a href="{{ route('admin.kategoris.create') }}" class="btn" style="background-color: #1d37df; color: white; border: none;">Tambah Data</a>
         </div>
 
+        {{-- Card body --}}
         <div class="card-body">
             @if(session('success'))
                 <div class="alert alert-success text-center">{{ session('success') }}</div>

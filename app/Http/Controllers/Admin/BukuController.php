@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller; // WAJIB biar Controller dikenali
+use App\Http\Controllers\Controller;
 use App\Models\Buku;
 use App\Models\Kategori;
 use App\Models\Rak;
@@ -35,6 +35,7 @@ class BukuController extends Controller
             'rak_id'       => 'required|exists:raks,id',
             'kategori_id'  => 'required|exists:kategoris,id',
             'gambar'       => 'nullable|image|max:2048',
+            'deskripsi'    => 'nullable|string', // tambahan
         ]);
 
         $buku = new Buku($request->except('gambar'));
@@ -43,6 +44,8 @@ class BukuController extends Controller
             $path         = $request->file('gambar')->store('bukus', 'public');
             $buku->gambar = $path;
         }
+
+        $buku->deskripsi = $request->deskripsi; // simpan deskripsi
 
         $buku->save();
 
@@ -73,6 +76,7 @@ class BukuController extends Controller
             'rak_id'       => 'required|exists:raks,id',
             'kategori_id'  => 'required|exists:kategoris,id',
             'gambar'       => 'nullable|image|max:2048',
+            'deskripsi'    => 'nullable|string', // tambahan
         ]);
 
         $buku->fill($request->except('gambar'));
@@ -82,10 +86,11 @@ class BukuController extends Controller
             if ($buku->gambar && Storage::disk('public')->exists($buku->gambar)) {
                 Storage::disk('public')->delete($buku->gambar);
             }
-
             $path         = $request->file('gambar')->store('bukus', 'public');
             $buku->gambar = $path;
         }
+
+        $buku->deskripsi = $request->deskripsi; // update deskripsi
 
         $buku->save();
 

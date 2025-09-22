@@ -1,27 +1,30 @@
 @extends('layouts.backend')
 
-@section('title', 'Admin Perpus - Detail Buku')
+@section('title', 'Petugas Perpus - Detail Buku')
+
 
 @section('content')
 <div class="container py-4">
     <div class="card shadow-sm">
-        {{-- Header --}}
-        <div class="card-header" style="background-color: #457de4; color: white;">
+        <div class="card-header bg-primary text-white">
             <h3 class="mb-0">Detail Buku</h3>
         </div>
-
-        {{-- Body --}}
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered mb-0">
-                    <tbody>
+            <div class="row">
+                <!-- Kolom Info Buku -->
+                <div class="col-md-8">
+                    <table class="table table-borderless">
                         <tr>
-                            <th style="width: 25%;">Kode Buku</th>
+                            <th width="30%">Kode Buku</th>
                             <td>{{ $buku->kode_buku }}</td>
                         </tr>
                         <tr>
                             <th>Judul</th>
                             <td>{{ $buku->judul }}</td>
+                        </tr>
+                        <tr>
+                            <th>Deskripsi</th>
+                            <td>{{ $buku->deskripsi }}</td>
                         </tr>
                         <tr>
                             <th>Penulis</th>
@@ -47,22 +50,23 @@
                             <th>Kategori</th>
                             <td>{{ $buku->kategori->nama_kategori ?? '-' }}</td>
                         </tr>
-                        <tr>
-                            <th>Gambar</th>
-                            <td>
-                                @if($buku->gambar)
-                                    <img src="{{ asset('storage/' . $buku->gambar) }}" alt="Gambar Buku" width="150" class="img-thumbnail">
-                                @else
-                                    <span class="text-muted">Tidak ada gambar</span>
-                                @endif
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                    </table>
+                </div>
+
+                <!-- Kolom Gambar Buku -->
+                <div class="col-md-4 text-center">
+                    @if($buku->gambar)
+                        <img src="{{ asset('storage/' . $buku->gambar) }}" alt="Gambar Buku" class="img-fluid rounded shadow-sm mb-3">
+                    @else
+                        <div class="border rounded p-5 text-muted">
+                            Tidak ada gambar
+                        </div>
+                    @endif
+                </div>
             </div>
 
-            <div class="mt-3">
-                <a href="{{ route('admin.bukus.index') }}" class="btn btn-primary">Kembali</a>
+            <div class="mt-4">
+                <a href="{{ route('admin.bukus.index') }}" class="btn btn-secondary">Kembali</a>
             </div>
         </div>
     </div>

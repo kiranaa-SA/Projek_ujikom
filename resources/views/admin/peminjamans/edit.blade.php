@@ -5,12 +5,12 @@
 @section('content')
 <div class="container py-4">
     <div class="card shadow-sm">
-        {{-- Header --}}
-        <div class="card-header" style="background-color: #457de4; color: white;">
-            <h3 class="mb-0">Edit Peminjaman</h3>
+        {{-- Card header --}}
+        <div class="card-header" style="background-color: #457de4;">
+            <h3 class="mb-0 text-white">Edit Peminjaman</h3>
         </div>
 
-        {{-- Body --}}
+        {{-- Card body --}}
         <div class="card-body">
             {{-- Error Alert --}}
             @if ($errors->any())
@@ -72,7 +72,6 @@
                     @enderror
                 </div>
 
-                {{-- Kalau ada field tanggal_kembali di DB --}}
                 <div class="mb-3">
                     <label for="tanggal_kembali" class="form-label fw-semibold">Tanggal Kembali</label>
                     <input type="date" name="tanggal_kembali" id="tanggal_kembali" 

@@ -65,4 +65,11 @@ class PengembalianController extends Controller
         return redirect()->route('admin.pengembalians.index')
             ->with('success', 'Data pengembalian berhasil ditambahkan');
     }
+
+    // ===== Tambahkan method show =====
+    public function show($id)
+    {
+        $pengembalian = Pengembalian::with('peminjaman.user', 'peminjaman.buku')->findOrFail($id);
+        return view('admin.pengembalians.show', compact('pengembalian'));
+    }
 }

@@ -5,50 +5,45 @@
 @section('content')
 <div class="container py-4">
     <div class="card shadow-sm">
-        {{-- Header --}}
-        <div class="card-header" style="background-color: #457de4; color: white;">
-            <h3 class="mb-0">Detail Peminjaman</h3>
+        {{-- Card Header --}}
+        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4;">
+            <h3 class="mb-0 text-white">Detail Peminjaman</h3>
+            <a href="{{ route('admin.peminjamans.index') }}" class="btn" style="background-color: #1d37df; color: white; border: none;">
+                Kembali
+            </a>
         </div>
 
-        {{-- Body --}}
+        {{-- Card Body --}}
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered mb-0">
+                <table class="table table-bordered table-hover text-center mb-0">
+                    <thead style="background-color: #e3f2fd; color: #212529;">
+                        <tr>
+                            <th>No</th>
+                            <th>User</th>
+                            <th>Buku</th>
+                            <th>Tanggal Pinjam</th>
+                            <th>Tanggal Kembali</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
                     <tbody>
                         <tr>
-                            <th style="width: 25%;">ID</th>
-                            <td>{{ $peminjaman->id }}</td>
-                        </tr>
-                        <tr>
-                            <th>User</th>
+                            <td>1</td>
                             <td>{{ $peminjaman->user->name ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Buku</th>
                             <td>{{ $peminjaman->buku->judul ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Tanggal Pinjam</th>
                             <td>{{ $peminjaman->tanggal_pinjam ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Tanggal Kembali</th>
-                            <td>{{ $peminjaman->tanggal_kembali ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Status</th>
+                            <td>{{ $peminjaman->tanggal_pengembalian ?? '-' }}</td>
                             <td>
-                                <span class="badge {{ $peminjaman->status == 'dipinjam' ? 'bg-warning' : 'bg-success' }}">
-                                    {{ ucfirst($peminjaman->status) }}
-                                </span>
+                                @if($peminjaman->status == 'dipinjam')
+                                    <span class="badge bg-warning text-dark">Dipinjam</span>
+                                @else
+                                    <span class="badge bg-success">Dikembalikan</span>
+                                @endif
                             </td>
                         </tr>
                     </tbody>
                 </table>
-            </div>
-
-            <div class="mt-3">
-                <a href="{{ route('admin.peminjamans.index') }}" class="btn btn-primary">Kembali</a>
             </div>
         </div>
     </div>

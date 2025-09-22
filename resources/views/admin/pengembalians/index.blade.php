@@ -6,12 +6,12 @@
 <div class="container py-4">
     <div class="card shadow-sm">
         {{-- Header --}}
-        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4; color: white;">
-            <h3 class="mb-0">Daftar Pengembalian</h3>
+ <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4;">
+            <h3 class="mb-0 text-white">Daftar Pengembalian</h3>
             <a href="{{ route('admin.pengembalians.create') }}" class="btn" style="background-color: #1d37df; color: white; border: none;">
                 Tambah Data
             </a>
-        </div>
+        </div>       
 
         {{-- Body --}}
         <div class="card-body">
@@ -39,7 +39,7 @@
                                 <td>{{ $pengembalian->peminjaman->user->name ?? '-' }}</td>
                                 <td>{{ $pengembalian->peminjaman->buku->judul ?? '-' }}</td>
                                 <td>{{ $pengembalian->peminjaman->tanggal_pinjam ?? '-' }}</td>
-                                <td>{{ $pengembalian->tanggal_pengembalian }}</td>
+                                <td>{{ $pengembalian->tanggal_pengembalian ?? '-' }}</td>
                                 <td>
                                     @if($pengembalian->kondisi == 'baik')
                                         <span class="badge bg-success">Baik</span>

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->year('tahun_terbit')->nullable(); // Hanya tahun
             $table->integer('stok')->default(0);
             $table->string('gambar')->nullable();
+            $table->text('deskripsi')->nullable(); // Tambahan kolom deskripsi
             $table->foreignId('rak_id')->constrained('raks')->cascadeOnDelete();
             $table->foreignId('kategori_id')->constrained('kategoris')->cascadeOnDelete();
             $table->timestamps();

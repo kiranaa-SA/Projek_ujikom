@@ -6,37 +6,34 @@
 <div class="container py-4">
     <div class="card shadow-sm">
         {{-- Header --}}
-        <div class="card-header" style="background-color: #457de4; color: white;">
-            <h3 class="mb-0">Detail Rak</h3>
+        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4;">
+            <h3 class="mb-0 text-white">Detail Rak</h3>
+             <a href="{{ route('admin.raks.index') }}" class="btn" style="background-color: #1d37df; color: white; border: none;">
+                Kembali
+            </a>
         </div>
 
         {{-- Body --}}
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered mb-0">
+                <table class="table table-bordered table-hover text-center mb-0">
+                    <thead style="background-color: #e3f2fd; color: #212529;">
+                        <tr>
+                            <th style="width: 5%;">No</th>
+                            <th>Kode</th>
+                            <th>Nama</th>
+                            <th>Lokasi</th>
+                        </tr>
+                    </thead>
                     <tbody>
                         <tr>
-                            <th style="width: 25%;">No</th>
-                            <td>{{ $rak->id }}</td>
-                        </tr>
-                        <tr>
-                            <th>Kode</th>
+                            <td>1</td>
                             <td>{{ $rak->kode }}</td>
-                        </tr>
-                        <tr>
-                            <th>Nama</th>
                             <td>{{ $rak->nama }}</td>
-                        </tr>
-                        <tr>
-                            <th>Lokasi</th>
                             <td>{{ $rak->lokasi }}</td>
                         </tr>
                     </tbody>
                 </table>
-            </div>
-
-            <div class="mt-3">
-                <a href="{{ route('admin.raks.index') }}" class="btn btn-primary">Kembali</a>
             </div>
         </div>
     </div>

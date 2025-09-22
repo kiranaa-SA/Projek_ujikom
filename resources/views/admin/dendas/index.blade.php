@@ -7,8 +7,8 @@
     {{-- Card utama --}}
     <div class="card shadow-sm">
         {{-- Card header --}}
-        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4; color: white;">
-            <h3 class="mb-0">Daftar Denda</h3>
+        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4;">
+            <h3 class="mb-0 text-white">Daftar Denda</h3>
             <a href="{{ route('admin.dendas.create') }}" class="btn" style="background-color: #1d37df; color: white; border: none;">
                 Tambah Denda
             </a>

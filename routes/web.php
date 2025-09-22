@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\Admin\PeminjamanController;
 use App\Http\Controllers\Admin\PengembalianController;
 use App\Http\Controllers\Admin\RakController;
-use App\Http\Controllers\Admin\UserrController;
+use App\Http\Controllers\Admin\UserController; // ✅ sudah pakai UserController
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Petugas\BukuController as PetugasBukuController;
 use App\Http\Controllers\Petugas\DashboardController as PetugasDashboardController;
@@ -43,15 +43,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         'peminjamans'   => PeminjamanController::class,
         'pengembalians' => PengembalianController::class,
         'dendas'        => DendaController::class,
-        'userrs'        => UserrController::class,
+        'users'         => UserController::class, // ✅ ganti dari userrs ke users
     ]);
 
     // Laporan
     Route::get('laporans', [LaporanController::class, 'index'])->name('laporans.index');
-
-    // Export PDF (filter otomatis ikut query params)
-    Route::get('laporans/export-pdf', [LaporanController::class, 'exportPdf'])
-        ->name('laporans.exportPdf');
+    Route::get('laporans/export-pdf', [LaporanController::class, 'exportPdf'])->name('laporans.exportPdf');
 });
 
 // ===================

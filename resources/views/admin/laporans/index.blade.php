@@ -5,11 +5,13 @@
 @section('content')
 <div class="container py-4">
     <div class="card shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4; color: white;">
-            <h3 class="mb-0">Laporan Peminjaman & Pengembalian</h3>
+        {{-- Card header --}}
+        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4;">
+            <h3 class="mb-0 text-white">Laporan Peminjaman & Pengembalian</h3>
             <a href="{{ route('admin.laporans.exportPdf') }}" class="btn btn-primary btn-sm">Export PDF</a>
         </div>
 
+        {{-- Card body --}}
         <div class="card-body">
             {{-- Filter --}}
             <form method="GET" action="{{ route('admin.laporans.index') }}" class="row g-3 mb-3">
@@ -55,7 +57,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-muted py-3">Belum ada data laporan.</td>
+                                <td colspan="6" class="text-center text-muted py-3">Belum ada data laporan.</td>
                             </tr>
                         @endforelse
                     </tbody>

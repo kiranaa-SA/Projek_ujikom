@@ -7,14 +7,14 @@
     {{-- Card utama --}}
     <div class="card shadow-sm">
         {{-- Card header --}}
-        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4; color: white;">
-            <h3 class="mb-0">Daftar Peminjaman</h3>
+        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4;">
+            <h3 class="mb-0 text-white">Daftar Peminjaman</h3>
             <a href="{{ route('admin.peminjamans.create') }}" class="btn" style="background-color: #1d37df; color: white; border: none;">
                 Tambah Data
             </a>
         </div>
 
-        {{-- Body --}}
+        {{-- Card body --}}
         <div class="card-body">
             @if(session('success'))
                 <div class="alert alert-success text-center">{{ session('success') }}</div>
@@ -36,11 +36,11 @@
                     <tbody>
                         @forelse($peminjamans as $peminjaman)
                         <tr class="text-nowrap">
-                            <td>{{ $peminjaman->id }}</td>
-                            <td>{{ $peminjaman->user->name }}</td>
-                            <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis;">{{ $peminjaman->buku->judul }}</td>
-                            <td>{{ $peminjaman->tanggal_pinjam }}</td>
-                            <td>{{ $peminjaman->tenggat_tempo }}</td>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $peminjaman->user->name ?? '-' }}</td>
+                            <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis;">{{ $peminjaman->buku->judul ?? '-' }}</td>
+                            <td>{{ $peminjaman->tanggal_pinjam ?? '-' }}</td>
+                            <td>{{ $peminjaman->tenggat_tempo ?? '-' }}</td>
                             <td>
                                 @if($peminjaman->status == 'dipinjam')
                                     <span class="badge bg-warning text-dark">Dipinjam</span>

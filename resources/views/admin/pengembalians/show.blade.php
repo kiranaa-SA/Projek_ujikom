@@ -6,49 +6,48 @@
 <div class="container py-4">
     <div class="card shadow-sm">
         {{-- Header --}}
-        <div class="card-header" style="background-color: #457de4; color: white;">
-            <h3 class="mb-0">Detail Pengembalian</h3>
+        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4;">
+            <h3 class="mb-0 text-white">Detail Pengembalian</h3>
+            <a href="{{ route('admin.pengembalians.index') }}" class="btn" style="background-color: #1d37df; color: white; border: none;">
+                Kembali
+            </a>
         </div>
 
         {{-- Body --}}
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered mb-0">
+                <table class="table table-bordered table-hover text-center mb-0">
+                    <thead style="background-color: #e3f2fd; color: #212529;">
+                        <tr>
+                            <th>No</th>
+                            <th>Peminjam</th>
+                            <th>Buku</th>
+                            <th>Tanggal Pinjam</th>
+                            <th>Tanggal Kembali</th>
+                            <th>Kondisi Buku</th>
+                            <th>Denda</th>
+                        </tr>
+                    </thead>
                     <tbody>
                         <tr>
-                            <th style="width: 25%;">ID</th>
-                            <td>{{ $pengembalian->id }}</td>
-                        </tr>
-                        <tr>
-                            <th>Peminjam</th>
+                            <td>1</td>
                             <td>{{ $pengembalian->peminjaman->user->name ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Buku</th>
                             <td>{{ $pengembalian->peminjaman->buku->judul ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Tanggal Pinjam</th>
-                            <td>{{ $pengembalian->peminjaman->tanggal_pinjam }}</td>
-                        </tr>
-                        <tr>
-                            <th>Tenggat Tempo</th>
-                            <td>{{ $pengembalian->peminjaman->tenggat_tempo }}</td>
-                        </tr>
-                        <tr>
-                            <th>Tanggal Pengembalian</th>
-                            <td>{{ $pengembalian->tanggal_pengembalian }}</td>
-                        </tr>
-                        <tr>
-                            <th>Kondisi Buku</th>
-                            <td>{{ ucfirst($pengembalian->kondisi) }}</td>
+                            <td>{{ $pengembalian->peminjaman->tanggal_pinjam ?? '-' }}</td>
+                            <td>{{ $pengembalian->tanggal_pengembalian ?? '-' }}</td>
+                            <td>
+                                @if($pengembalian->kondisi == 'baik')
+                                    <span class="badge bg-success">Baik</span>
+                                @elseif($pengembalian->kondisi == 'rusak')
+                                    <span class="badge bg-warning text-dark">Rusak</span>
+                                @else
+                                    <span class="badge bg-danger">Hilang</span>
+                                @endif
+                            </td>
+                            <td>Rp {{ number_format($pengembalian->denda, 0, ',', '.') }}</td>
                         </tr>
                     </tbody>
                 </table>
-            </div>
-
-            <div class="mt-3">
-                <a href="{{ route('admin.pengembalians.index') }}" class="btn btn-primary">Kembali</a>
             </div>
         </div>
     </div>

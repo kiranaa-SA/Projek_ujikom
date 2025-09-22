@@ -5,12 +5,12 @@
 @section('content')
 <div class="container py-4">
     <div class="card shadow-sm">
-        {{-- Header --}}
-        <div class="card-header" style="background-color: #457de4; color: white;">
-            <h3 class="mb-0">Tambah Peminjaman</h3>
+        {{-- Card header --}}
+        <div class="card-header" style="background-color: #457de4;">
+            <h3 class="mb-0 text-white">Tambah Peminjaman</h3>
         </div>
 
-        {{-- Body --}}
+        {{-- Card body --}}
         <div class="card-body">
             {{-- Error Alert --}}
             @if ($errors->any())

@@ -9,28 +9,30 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    protected $table = 'users'; // default Laravel
+
+    /**
+     * Kolom yang bisa diisi massal
+     */
     protected $fillable = [
         'name',
         'email',
         'password',
+        'role',
     ];
 
+    /**
+     * Kolom yang disembunyikan saat diubah ke array/JSON
+     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
-        ];
-    }
-
-    // 🔗 Relasi ke peminjaman
-    public function peminjamans()
-    {
-        return $this->hasMany(Peminjaman::class);
-    }
+    /**
+     * Tipe cast untuk kolom tertentu
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
 }

@@ -42,13 +42,13 @@
                 <div class="mb-4">
                     <label class="block mb-1 font-medium text-gray-300" for="email">Email</label>
                     <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
-                           class="w-full px-4 py-2 bg-transparent border-b-2 border-blue-500 text-white placeholder-gray-400 focus:outline-none focus:border-blue-400">
+                           class="w-full px-2 py-1 bg-transparent border-b border-blue-500 text-white placeholder-gray-400 focus:outline-none focus:border-blue-400">
                 </div>
 
                 <div class="mb-6">
                     <label class="block mb-1 font-medium text-gray-300" for="password">Password</label>
                     <input id="password" type="password" name="password" required
-                           class="w-full px-4 py-2 bg-transparent border-b-2 border-blue-500 text-white placeholder-gray-400 focus:outline-none focus:border-blue-400">
+                           class="w-full px-2 py-1 bg-transparent border-b border-blue-500 text-white placeholder-gray-400 focus:outline-none focus:border-blue-400">
                 </div>
 
                 <button type="submit"

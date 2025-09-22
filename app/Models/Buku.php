@@ -16,6 +16,7 @@ class Buku extends Model
         'tahun_terbit',
         'stok',
         'gambar',
+        'deskripsi', // tambahan
         'rak_id',
         'kategori_id',
     ];

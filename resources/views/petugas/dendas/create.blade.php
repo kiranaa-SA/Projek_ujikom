@@ -5,12 +5,16 @@
 @section('content')
 <div class="container py-4">
     <div class="card shadow-sm">
-        <div class="card-header" style="background-color: #457de4; color: white;">
-            <h3 class="mb-0">Tambah Denda</h3>
+        {{-- Card header --}}
+        <div class="card-header" style="background-color: #457de4;">
+            <h3 class="mb-0 text-white">Tambah Denda</h3>
         </div>
+
+        {{-- Card body --}}
         <div class="card-body">
             <form action="{{ route('petugas.dendas.store') }}" method="POST">
                 @csrf
+
                 <div class="mb-3">
                     <label for="peminjaman_id" class="form-label">Nama Peminjam</label>
                     <select name="peminjaman_id" id="peminjaman_id" class="form-select @error('peminjaman_id') is-invalid @enderror" required>
