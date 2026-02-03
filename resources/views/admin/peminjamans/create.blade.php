@@ -29,9 +29,18 @@
             <form action="{{ route('admin.peminjamans.store') }}" method="POST" class="p-3">
                 @csrf
 
+                {{-- ✅ KODE PEMINJAMAN (OTOMATIS) --}}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Kode Peminjaman</label>
+                    <input type="text"
+                           class="form-control"
+                           value="Otomatis oleh sistem"
+                           readonly>
+                </div>
+
                 <div class="mb-3">
                     <label for="user_id" class="form-label fw-semibold">User</label>
-                    <select name="user_id" id="user_id" 
+                    <select name="user_id" id="user_id"
                             class="form-select @error('user_id') is-invalid @enderror" required>
                         <option value="">-- Pilih User --</option>
                         @foreach($users as $user)
@@ -47,7 +56,7 @@
 
                 <div class="mb-3">
                     <label for="buku_id" class="form-label fw-semibold">Buku</label>
-                    <select name="buku_id" id="buku_id" 
+                    <select name="buku_id" id="buku_id"
                             class="form-select @error('buku_id') is-invalid @enderror" required>
                         <option value="">-- Pilih Buku --</option>
                         @foreach($bukus as $buku)
@@ -63,7 +72,7 @@
 
                 <div class="mb-3">
                     <label for="tanggal_pinjam" class="form-label fw-semibold">Tanggal Pinjam</label>
-                    <input type="date" name="tanggal_pinjam" id="tanggal_pinjam" 
+                    <input type="date" name="tanggal_pinjam" id="tanggal_pinjam"
                            class="form-control @error('tanggal_pinjam') is-invalid @enderror"
                            value="{{ old('tanggal_pinjam', date('Y-m-d')) }}" required>
                     @error('tanggal_pinjam')
@@ -71,19 +80,9 @@
                     @enderror
                 </div>
 
-                <div class="mb-3">
-                    <label for="status" class="form-label fw-semibold">Status</label>
-                    <select name="status" id="status" 
-                            class="form-select @error('status') is-invalid @enderror" required>
-                        <option value="dipinjam" {{ old('status') == 'dipinjam' ? 'selected' : '' }}>Dipinjam</option>
-                        <option value="dikembalikan" {{ old('status') == 'dikembalikan' ? 'selected' : '' }}>Dikembalikan</option>
-                    </select>
-                    @error('status')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
+                {{-- STATUS DISET PENDING OLEH SISTEM --}}
+                <input type="hidden" name="status" value="pending">
 
-                {{-- Tenggat Tempo dihitung otomatis di controller --}}
                 <div class="mt-4">
                     <button type="submit" class="btn btn-primary me-2">Simpan</button>
                     <a href="{{ route('admin.peminjamans.index') }}" class="btn btn-secondary">Batal</a>

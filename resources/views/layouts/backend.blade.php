@@ -4,11 +4,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" type="image/png" href="{{asset('assets/images/logos/11zon_cropped.png')}}" />
+
   <title>@yield('title', 'Admin Perpustakaan')</title>
-  <link rel="shortcut icon" type="image/png" href="{{ asset('assets/images/logos/favicon.png') }}" />
+
+  {{-- Favicon Perpus (bulat) --}}
+
   <link rel="stylesheet" href="{{ asset('assets/css/styles.min.css') }}" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
+
 
 <body>
   <!--  Body Wrapper -->
@@ -26,7 +31,6 @@
       <!--  Header End -->
 
       <div class="container-fluid">
-      
         @yield('content')
       </div>
     </div>

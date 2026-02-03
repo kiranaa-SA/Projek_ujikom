@@ -6,9 +6,8 @@
 <div class="container py-4">
     <div class="card shadow-sm">
         {{-- Header --}}
-        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4;">
+        <div class="card-header" style="background-color: #457de4;">
             <h3 class="mb-0 text-white">Tambah Pengembalian</h3>
-            </a>
         </div>
 
         {{-- Body --}}
@@ -27,18 +26,18 @@
             @endif
 
             {{-- Form --}}
-            <form action="{{ route('petugas.pengembalians.store') }}" method="POST" class="p-3 border rounded bg-light shadow-sm">
+            <form action="{{ route('petugas.pengembalians.store') }}" method="POST">
                 @csrf
 
                 {{-- Pilih Peminjaman --}}
                 <div class="mb-3">
                     <label for="peminjaman_id" class="form-label fw-semibold">Peminjaman</label>
-                    <select name="peminjaman_id" id="peminjaman_id" 
+                    <select name="peminjaman_id" id="peminjaman_id"
                             class="form-select @error('peminjaman_id') is-invalid @enderror" required>
                         <option value="">-- Pilih Peminjam --</option>
                         @foreach($peminjamans as $p)
                             <option value="{{ $p->id }}" {{ old('peminjaman_id') == $p->id ? 'selected' : '' }}>
-                                {{ $p->user->name ?? '-' }} - {{ $p->buku->judul ?? '-' }}
+                                {{ $p->user->user ?? '-' }} - {{ $p->buku->judul ?? '-' }}
                                 (Pinjam: {{ $p->tanggal_pinjam }}, Tempo: {{ $p->tenggat_tempo }})
                             </option>
                         @endforeach
@@ -51,7 +50,7 @@
                 {{-- Tanggal Pengembalian --}}
                 <div class="mb-3">
                     <label for="tanggal_pengembalian" class="form-label fw-semibold">Tanggal Pengembalian</label>
-                    <input type="date" name="tanggal_pengembalian" id="tanggal_pengembalian" 
+                    <input type="date" name="tanggal_pengembalian" id="tanggal_pengembalian"
                            class="form-control @error('tanggal_pengembalian') is-invalid @enderror"
                            value="{{ old('tanggal_pengembalian', date('Y-m-d')) }}" required>
                     @error('tanggal_pengembalian')
@@ -62,7 +61,7 @@
                 {{-- Kondisi Buku --}}
                 <div class="mb-3">
                     <label for="kondisi" class="form-label fw-semibold">Kondisi Buku</label>
-                    <select name="kondisi" id="kondisi" 
+                    <select name="kondisi" id="kondisi"
                             class="form-select @error('kondisi') is-invalid @enderror" required>
                         <option value="baik" {{ old('kondisi') == 'baik' ? 'selected' : '' }}>Baik</option>
                         <option value="rusak" {{ old('kondisi') == 'rusak' ? 'selected' : '' }}>Rusak</option>
@@ -74,9 +73,13 @@
                 </div>
 
                 {{-- Tombol --}}
-                <div class="mt-4 d-flex justify-content-end gap-2">
-                    <a href="{{ route('petugas.pengembalians.index') }}" class="btn btn-secondary">Batal</a>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{{ route('petugas.pengembalians.index') }}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Kembali
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Simpan
+                    </button>
                 </div>
             </form>
         </div>

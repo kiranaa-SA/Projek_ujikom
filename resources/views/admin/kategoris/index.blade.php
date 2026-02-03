@@ -9,7 +9,11 @@
         {{-- Card header --}}
         <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4;">
             <h3 class="mb-0 text-white">Daftar Kategori</h3>
-            <a href="{{ route('admin.kategoris.create') }}" class="btn" style="background-color: #1d37df; color: white; border: none;">Tambah Data</a>
+            <a href="{{ route('admin.kategoris.create') }}" 
+               class="btn" 
+               style="background-color: #26559b; color: white; border: none;">
+               Tambah Data
+            </a>
         </div>
 
         {{-- Card body --}}
@@ -24,6 +28,7 @@
                         <tr>
                             <th style="width: 5%;">No</th>
                             <th>Nama Kategori</th>
+                            <th>Deskripsi</th>
                             <th style="width: 20%;">Aksi</th>
                         </tr>
                     </thead>
@@ -32,6 +37,7 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $kategori->nama_kategori }}</td>
+                            <td class="text-start">{{ $kategori->deskripsi ?? '-' }}</td>
                             <td class="text-nowrap">
                                 <a href="{{ route('admin.kategoris.show', $kategori->id) }}" class="btn btn-info btn-sm mb-1" title="Detail">
                                     <i class="bi bi-eye"></i>
@@ -50,7 +56,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="3" class="text-center text-muted py-3">Belum ada data kategori.</td>
+                            <td colspan="4" class="text-center text-muted py-3">Belum ada data kategori.</td>
                         </tr>
                         @endforelse
                     </tbody>

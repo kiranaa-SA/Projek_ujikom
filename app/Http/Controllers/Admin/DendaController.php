@@ -3,7 +3,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Denda;
-use App\Models\Peminjaman;
+use App\Models\Pengembalian;
 use Illuminate\Http\Request;
 
 class DendaController extends Controller
@@ -16,20 +16,21 @@ class DendaController extends Controller
 
     public function create()
     {
-        $peminjamans = Peminjaman::with('user', 'buku')->get();
-        return view('admin.dendas.create', compact('peminjamans'));
+        // Ambil data pengembalian (karena denda terkait pengembalian)
+        $pengembalians = Pengembalian::with('peminjaman.user', 'peminjaman.buku')->get();
+        return view('admin.dendas.create', compact('pengembalians'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'peminjaman_id' => 'required|exists:peminjamans,id',
-            'kondisi_buku'  => 'required|in:baik,rusak',
-            'status'        => 'required|in:belum_dibayar,lunas',
+            'pengembalian_id' => 'required|exists:pengembalians,id',
+            'kondisi_buku'    => 'required|in:baik,rusak',
+            'status'          => 'required|in:belum_dibayar,lunas',
         ]);
 
         Denda::create([
-            'pengembalian_id' => $request->peminjaman_id, // pastikan sesuai relasi
+            'pengembalian_id' => $request->pengembalian_id,
             'kondisi_buku'    => $request->kondisi_buku,
             'status'          => $request->status,
         ]);
@@ -45,20 +46,20 @@ class DendaController extends Controller
 
     public function edit(Denda $denda)
     {
-        $peminjamans = Peminjaman::with('user', 'buku')->get();
-        return view('admin.dendas.edit', compact('denda', 'peminjamans'));
+        $pengembalians = Pengembalian::with('peminjaman.user', 'peminjaman.buku')->get();
+        return view('admin.dendas.edit', compact('denda', 'pengembalians'));
     }
 
     public function update(Request $request, Denda $denda)
     {
         $request->validate([
-            'peminjaman_id' => 'required|exists:peminjamans,id',
-            'kondisi_buku'  => 'required|in:baik,rusak',
-            'status'        => 'required|in:belum_dibayar,lunas',
+            'pengembalian_id' => 'required|exists:pengembalians,id',
+            'kondisi_buku'    => 'required|in:baik,rusak',
+            'status'          => 'required|in:belum_dibayar,lunas',
         ]);
 
         $denda->update([
-            'pengembalian_id' => $request->peminjaman_id,
+            'pengembalian_id' => $request->pengembalian_id,
             'kondisi_buku'    => $request->kondisi_buku,
             'status'          => $request->status,
         ]);

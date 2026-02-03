@@ -7,8 +7,10 @@
     <div class="card shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4;">
             <h3 class="mb-0 text-white">Daftar Buku</h3>
-            <a href="{{ route('petugas.bukus.create') }}" class="btn" style="background-color: #1d37df; color: white; border: none;">
-                Tambah Data
+            <a href="{{ route('petugas.bukus.create') }}" 
+            class="btn" 
+            style="background-color: #26559b; color: white; border: none;">
+            Tambah Data
             </a>
         </div>
         <div class="card-body">

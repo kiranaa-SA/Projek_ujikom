@@ -10,8 +10,10 @@ class Kategori extends Model
 
     protected $table = 'kategoris';
 
-    protected $fillable = ['nama_kategori'];
+    // Tambahkan 'deskripsi' supaya bisa diisi lewat mass assignment
+    protected $fillable = ['nama_kategori', 'deskripsi', 'slug'];
 
+    // Relasi ke Buku
     public function buku()
     {
         return $this->hasMany(Buku::class, 'kategori_id');

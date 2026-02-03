@@ -21,12 +21,14 @@
                         <tr>
                             <th style="width: 5%;">No</th>
                             <th>Nama Kategori</th>
+                            <th>Deskripsi</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>1</td>
                             <td>{{ $kategori->nama_kategori }}</td>
+                            <td>{{ $kategori->deskripsi ?? '-' }}</td>
                         </tr>
                     </tbody>
                 </table>

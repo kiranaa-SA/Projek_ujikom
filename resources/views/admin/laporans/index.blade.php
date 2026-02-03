@@ -8,7 +8,8 @@
         {{-- Card header --}}
         <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4;">
             <h3 class="mb-0 text-white">Laporan Peminjaman & Pengembalian</h3>
-            <a href="{{ route('admin.laporans.exportPdf') }}" class="btn btn-primary btn-sm">Export PDF</a>
+            <a href="{{ route('admin.laporans.exportPdf') }}" class="btn" 
+            style="background-color: #26559b; color: white; border: none;">Export PDF</a>
         </div>
 
         {{-- Card body --}}

@@ -30,6 +30,15 @@
                 @csrf
                 @method('PUT')
 
+                {{-- ✅ KODE PEMINJAMAN (READONLY) --}}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Kode Peminjaman</label>
+                    <input type="text"
+                           class="form-control"
+                           value="{{ $peminjaman->kode_peminjaman }}"
+                           readonly>
+                </div>
+
                 <div class="mb-3">
                     <label for="user_id" class="form-label fw-semibold">User</label>
                     <select name="user_id" id="user_id" 

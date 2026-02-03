@@ -38,6 +38,16 @@
                     @enderror
                 </div>
 
+                <div class="mb-3">
+                    <label for="deskripsi" class="form-label fw-semibold">Deskripsi</label>
+                    <textarea name="deskripsi" id="deskripsi" rows="3"
+                              class="form-control @error('deskripsi') is-invalid @enderror"
+                              placeholder="Masukkan deskripsi kategori">{{ old('deskripsi') }}</textarea>
+                    @error('deskripsi')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
                 <div class="mt-4">
                     <button type="submit" class="btn btn-primary me-2">Simpan</button>
                     <a href="{{ route('admin.kategoris.index') }}" class="btn btn-secondary">Kembali</a>

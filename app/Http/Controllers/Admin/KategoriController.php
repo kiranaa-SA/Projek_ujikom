@@ -1,7 +1,8 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller; 
+use App\Http\Controllers\Controller;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
 
@@ -23,15 +24,27 @@ class KategoriController extends Controller
     // Menyimpan kategori baru
     public function store(Request $request)
     {
-        $request->validate([
-            'nama_kategori' => 'required|max:100',
-        ]);
+        $request->validate(
+            [
+                'nama_kategori' => 'required|string|max:100|unique:kategoris,nama_kategori',
+                'deskripsi'     => 'nullable|string|max:255',
+            ],
+            [
+                'nama_kategori.required' => 'Nama kategori wajib diisi',
+                'nama_kategori.unique'   => 'Nama kategori sudah digunakan',
+                'nama_kategori.max'      => 'Nama kategori maksimal 100 karakter',
+                'deskripsi.max'          => 'Deskripsi maksimal 255 karakter',
+            ]
+        );
 
         Kategori::create([
             'nama_kategori' => $request->nama_kategori,
+            'deskripsi'     => $request->deskripsi,
         ]);
 
-        return redirect()->route('admin.kategoris.index')->with('success', 'Kategori berhasil ditambahkan');
+        return redirect()
+            ->route('admin.kategoris.index')
+            ->with('success', 'Kategori berhasil ditambahkan');
     }
 
     // Menampilkan detail kategori
@@ -49,21 +62,36 @@ class KategoriController extends Controller
     // Update kategori
     public function update(Request $request, Kategori $kategori)
     {
-        $request->validate([
-            'nama_kategori' => 'required|max:100',
-        ]);
+        $request->validate(
+            [
+                'nama_kategori' => 'required|string|max:100|unique:kategoris,nama_kategori,' . $kategori->id,
+                'deskripsi'     => 'nullable|string|max:255',
+            ],
+            [
+                'nama_kategori.required' => 'Nama kategori wajib diisi',
+                'nama_kategori.unique'   => 'Nama kategori sudah digunakan',
+                'nama_kategori.max'      => 'Nama kategori maksimal 100 karakter',
+                'deskripsi.max'          => 'Deskripsi maksimal 255 karakter',
+            ]
+        );
 
         $kategori->update([
             'nama_kategori' => $request->nama_kategori,
+            'deskripsi'     => $request->deskripsi,
         ]);
 
-        return redirect()->route('admin.kategoris.index')->with('success', 'Kategori berhasil diupdate');
+        return redirect()
+            ->route('admin.kategoris.index')
+            ->with('success', 'Kategori berhasil diupdate');
     }
 
     // Hapus kategori
     public function destroy(Kategori $kategori)
     {
         $kategori->delete();
-        return redirect()->route('admin.kategoris.index')->with('success', 'Kategori berhasil dihapus');
+
+        return redirect()
+            ->route('admin.kategoris.index')
+            ->with('success', 'Kategori berhasil dihapus');
     }
 }

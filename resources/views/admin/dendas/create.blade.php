@@ -15,24 +15,28 @@
             <form action="{{ route('admin.dendas.store') }}" method="POST">
                 @csrf
 
+                {{-- Pilih Pengembalian --}}
                 <div class="mb-3">
-                    <label for="peminjaman_id" class="form-label">Nama Peminjam</label>
-                    <select name="peminjaman_id" id="peminjaman_id" class="form-select @error('peminjaman_id') is-invalid @enderror" required>
-                        <option value="">-- Pilih Peminjam --</option>
-                        @foreach($peminjamans as $peminjaman)
-                            <option value="{{ $peminjaman->id }}" {{ old('peminjaman_id') == $peminjaman->id ? 'selected' : '' }}>
-                                {{ $peminjaman->user->name ?? '-' }} | Buku: {{ $peminjaman->buku->judul ?? '-' }}
+                    <label for="pengembalian_id" class="form-label">Nama Peminjam & Buku</label>
+                    <select name="pengembalian_id" id="pengembalian_id"
+                        class="form-select @error('pengembalian_id') is-invalid @enderror" required>
+                        <option value="">-- Pilih Pengembalian --</option>
+                        @foreach($pengembalians as $pengembalian)
+                            <option value="{{ $pengembalian->id }}" {{ old('pengembalian_id') == $pengembalian->id ? 'selected' : '' }}>
+                                {{ $pengembalian->peminjaman->user->name ?? '-' }} | Buku: {{ $pengembalian->peminjaman->buku->judul ?? '-' }}
                             </option>
                         @endforeach
                     </select>
-                    @error('peminjaman_id')
+                    @error('pengembalian_id')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
+                {{-- Kondisi Buku --}}
                 <div class="mb-3">
                     <label for="kondisi_buku" class="form-label">Kondisi Buku</label>
-                    <select name="kondisi_buku" id="kondisi_buku" class="form-select @error('kondisi_buku') is-invalid @enderror" required>
+                    <select name="kondisi_buku" id="kondisi_buku"
+                        class="form-select @error('kondisi_buku') is-invalid @enderror" required>
                         <option value="">-- Pilih Kondisi --</option>
                         <option value="baik" {{ old('kondisi_buku')=='baik' ? 'selected' : '' }}>Baik</option>
                         <option value="rusak" {{ old('kondisi_buku')=='rusak' ? 'selected' : '' }}>Rusak</option>
@@ -42,9 +46,11 @@
                     @enderror
                 </div>
 
+                {{-- Status Denda --}}
                 <div class="mb-3">
-                    <label for="status" class="form-label">Status</label>
-                    <select name="status" id="status" class="form-select @error('status') is-invalid @enderror" required>
+                    <label for="status" class="form-label">Status Denda</label>
+                    <select name="status" id="status"
+                        class="form-select @error('status') is-invalid @enderror" required>
                         <option value="">-- Pilih Status --</option>
                         <option value="belum_dibayar" {{ old('status')=='belum_dibayar' ? 'selected' : '' }}>Belum Lunas</option>
                         <option value="lunas" {{ old('status')=='lunas' ? 'selected' : '' }}>Lunas</option>
@@ -54,6 +60,7 @@
                     @enderror
                 </div>
 
+                {{-- Tombol --}}
                 <button type="submit" class="btn" style="background-color: #1d37df; color: white;">Simpan</button>
                 <a href="{{ route('admin.dendas.index') }}" class="btn btn-secondary">Batal</a>
             </form>

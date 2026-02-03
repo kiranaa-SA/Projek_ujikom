@@ -8,8 +8,10 @@
         {{-- Header --}}
         <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4;">
             <h3 class="mb-0 text-white">Daftar User</h3>
-            <a href="{{ route('admin.users.create') }}" class="btn" style="background-color: #1d37df; color: white; border: none;">
-                Tambah Data
+            <a href="{{ route('admin.users.create') }}" 
+               class="btn" 
+               style="background-color: #26559b; color: white; border: none;">
+               Tambah Data
             </a>
         </div>
 
@@ -27,7 +29,7 @@
                             <th>Nama</th>
                             <th>Email</th>
                             <th>Role</th>
-                            <th style="width:180px;">Aksi</th>
+                            <th style="width:150px;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -49,12 +51,22 @@
                                     </span>
                                 </td>
                                 <td class="text-nowrap">
-                                    <a href="{{ route('admin.users.show', $user->id) }}" class="btn btn-sm btn-info mb-1">Detail</a>
-                                    <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-sm btn-warning mb-1">Edit</a>
-                                    <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus user ini?')">
+                                    <a href="{{ route('admin.users.show', $user->id) }}" 
+                                       class="btn btn-sm btn-info mb-1" title="Detail">
+                                        <i class="ti ti-eye"></i>
+                                    </a>
+                                    <a href="{{ route('admin.users.edit', $user->id) }}" 
+                                       class="btn btn-sm btn-warning mb-1" title="Edit">
+                                        <i class="ti ti-edit"></i>
+                                    </a>
+                                    <form action="{{ route('admin.users.destroy', $user->id) }}" 
+                                          method="POST" class="d-inline" 
+                                          onsubmit="return confirm('Yakin ingin menghapus user ini?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button class="btn btn-sm btn-danger mb-1">Hapus</button>
+                                        <button class="btn btn-sm btn-danger mb-1" title="Hapus">
+                                            <i class="ti ti-trash"></i>
+                                        </button>
                                     </form>
                                 </td>
                             </tr>

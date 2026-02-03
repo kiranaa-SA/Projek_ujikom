@@ -3,74 +3,44 @@ namespace App\Http\Controllers\Petugas;
 
 use App\Http\Controllers\Controller;
 use App\Models\Buku;
-use App\Models\Denda;
 use App\Models\Peminjaman;
 use App\Models\Pengembalian;
+use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // Statistik utama
-        $totalBuku         = Buku::count();
-        $totalPeminjaman   = Peminjaman::where('status', 'dipinjam')->count();
-        $totalPengembalian = Pengembalian::count();
-        $totalDenda        = Denda::where('status', 'belum_dibayar')->count();
+        // --- Statistik utama ---
+        $totalBuku            = Buku::count();
+        $totalUser            = User::count();
+        $totalPeminjamanAktif = Peminjaman::where('status', 'dipinjam')->count();
+        $totalPengembalian    = Pengembalian::count();
 
-        // 6 minggu terakhir
-        $currentWeek = Carbon::now()->weekOfYear;
-        $weeks       = collect(range($currentWeek - 5, $currentWeek));
+        // --- Data untuk grafik ---
+        // ambil 7 hari terakhir
+        $dates  = collect(range(6, 0))->map(fn($i) => Carbon::now()->subDays($i)->toDateString());
+        $labels = $dates->map(fn($d) => Carbon::parse($d)->format('d M'))->toArray();
 
-        // Ambil data per minggu
-        $peminjaman = Peminjaman::select(
-            DB::raw('WEEK(created_at, 1) as minggu'),
-            DB::raw('COUNT(*) as total')
-        )
-            ->whereBetween(DB::raw('WEEK(created_at,1)'), [$currentWeek - 5, $currentWeek])
-            ->groupBy('minggu')
-            ->pluck('total', 'minggu');
+        // hitung jumlah peminjaman dan pengembalian per tanggal
+        $jumlahPeminjaman = $dates->map(fn($d) =>
+            Peminjaman::whereDate('tanggal_pinjam', $d)->count()
+        )->toArray();
 
-        $pengembalian = Pengembalian::select(
-            DB::raw('WEEK(tanggal_pengembalian, 1) as minggu'),
-            DB::raw('COUNT(*) as total')
-        )
-            ->whereBetween(DB::raw('WEEK(tanggal_pengembalian,1)'), [$currentWeek - 5, $currentWeek])
-            ->groupBy('minggu')
-            ->pluck('total', 'minggu');
+        $jumlahPengembalian = $dates->map(fn($d) =>
+            Pengembalian::whereDate('tanggal_pengembalian', $d)->count()
+        )->toArray();
 
-        $denda = Denda::select(
-            DB::raw('WEEK(created_at, 1) as minggu'),
-            DB::raw('COUNT(*) as total')
-        )
-            ->where('status', 'belum_dibayar')
-            ->whereBetween(DB::raw('WEEK(created_at,1)'), [$currentWeek - 5, $currentWeek])
-            ->groupBy('minggu')
-            ->pluck('total', 'minggu');
-
-        // Siapkan array untuk chart
-        $labels             = [];
-        $jumlahPeminjaman   = [];
-        $jumlahPengembalian = [];
-        $jumlahDenda        = [];
-
-        foreach ($weeks as $week) {
-            $labels[]             = "Minggu " . $week;
-            $jumlahPeminjaman[]   = $peminjaman[$week] ?? 0;
-            $jumlahPengembalian[] = $pengembalian[$week] ?? 0;
-            $jumlahDenda[]        = $denda[$week] ?? 0;
-        }
-
+        // kirim ke view
         return view('petugas.dashboard', compact(
             'totalBuku',
-            'totalPeminjaman',
+            'totalUser',
+            'totalPeminjamanAktif',
             'totalPengembalian',
-            'totalDenda',
             'labels',
             'jumlahPeminjaman',
-            'jumlahPengembalian',
-            'jumlahDenda'
+            'jumlahPengembalian'
         ));
     }
 }

@@ -20,30 +20,28 @@ class LoginController extends Controller
 
         switch ($role) {
             case 'admin':
-                return route('admin.dashboard'); // redirect ke admin dashboard
+                return route('admin.dashboard'); // ✅ redirect ke dashboard admin
             case 'petugas':
-                return route('petugas.dashboard'); // redirect ke petugas dashboard
-            case 'siswa':
-                return route('siswa.dashboard'); // redirect ke siswa dashboard
+                return route('petugas.dashboard'); // ✅ redirect ke dashboard petugas
             default:
-                return '/home'; // fallback
+                return route('home'); // ✅ user biasa diarahkan ke halaman frontend
         }
     }
 
     /**
-     * Setelah logout redirect ke login page.
+     * Setelah logout redirect ke halaman frontend home.
      */
     protected function loggedOut(Request $request)
     {
-        return redirect()->route('login');
+        return redirect()->route('home');
     }
 
     /**
-     * Create a new controller instance.
+     * Constructor.
      */
     public function __construct()
     {
+        // Guest middleware untuk yang belum login
         $this->middleware('guest')->except('logout');
-        $this->middleware('auth')->only('logout');
     }
-}   
+}

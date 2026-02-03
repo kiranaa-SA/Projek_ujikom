@@ -7,8 +7,10 @@
     <div class="card shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4;">
             <h3 class="mb-0 text-white">Daftar Rak</h3>
-            <a href="{{ route('admin.raks.create') }}" class="btn" style="background-color: #1d37df; color: white; border: none;">
-                Tambah Data
+             <a href="{{ route('admin.raks.create') }}" 
+            class="btn" 
+            style="background-color: #26559b; color: white; border: none;">
+            Tambah Data
             </a>
         </div>
 
@@ -36,19 +38,23 @@
                                 <td>{{ $rak->nama }}</td>
                                 <td>{{ $rak->lokasi }}</td>
                                 <td class="text-nowrap">
+                                    <!-- Detail -->
                                     <a href="{{ route('admin.raks.show', $rak->id) }}" 
-                                       class="btn btn-info btn-sm mb-1" title="Detail">
+                                       class="btn btn-info btn-sm" title="Detail" data-bs-toggle="tooltip">
                                         <i class="bi bi-eye"></i>
                                     </a>
+                                    <!-- Edit -->
                                     <a href="{{ route('admin.raks.edit', $rak->id) }}" 
-                                       class="btn btn-warning btn-sm mb-1" title="Edit">
+                                       class="btn btn-warning btn-sm" title="Edit" data-bs-toggle="tooltip">
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
-                                    <form action="{{ route('admin.raks.destroy', $rak->id) }}" method="POST" class="d-inline" 
+                                    <!-- Hapus -->
+                                    <form action="{{ route('admin.raks.destroy', $rak->id) }}" 
+                                          method="POST" class="d-inline" 
                                           onsubmit="return confirm('Yakin hapus data rak ini?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm mb-1" title="Hapus">
+                                        <button type="submit" class="btn btn-danger btn-sm" title="Hapus" data-bs-toggle="tooltip">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>

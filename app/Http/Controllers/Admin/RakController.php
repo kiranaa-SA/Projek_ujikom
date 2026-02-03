@@ -23,15 +23,28 @@ class RakController extends Controller
     // Simpan rak baru
     public function store(Request $request)
     {
-        $request->validate([
-            'kode'   => 'required|max:50',
-            'nama'   => 'required|max:100',
-            'lokasi' => 'required|max:100',
-        ]);
+        $request->validate(
+            [
+                'kode'   => 'required|string|max:50|unique:raks,kode',
+                'nama'   => 'required|string|max:100',
+                'lokasi' => 'required|string|max:100',
+            ],
+            [
+                'kode.required'   => 'Kode rak wajib diisi',
+                'kode.unique'     => 'Kode rak sudah digunakan',
+                'kode.max'        => 'Kode rak maksimal 50 karakter',
+                'nama.required'   => 'Nama rak wajib diisi',
+                'nama.max'        => 'Nama rak maksimal 100 karakter',
+                'lokasi.required' => 'Lokasi rak wajib diisi',
+                'lokasi.max'      => 'Lokasi rak maksimal 100 karakter',
+            ]
+        );
 
         Rak::create($request->only(['kode', 'nama', 'lokasi']));
 
-        return redirect()->route('admin.raks.index')->with('success', 'Rak berhasil ditambahkan');
+        return redirect()
+            ->route('admin.raks.index')
+            ->with('success', 'Rak berhasil ditambahkan');
     }
 
     // Form edit rak
@@ -43,22 +56,38 @@ class RakController extends Controller
     // Update rak
     public function update(Request $request, Rak $rak)
     {
-        $request->validate([
-            'kode'   => 'required|max:50',
-            'nama'   => 'required|max:100',
-            'lokasi' => 'required|max:100',
-        ]);
+        $request->validate(
+            [
+                'kode'   => 'required|string|max:50|unique:raks,kode,' . $rak->id,
+                'nama'   => 'required|string|max:100',
+                'lokasi' => 'required|string|max:100',
+            ],
+            [
+                'kode.required'   => 'Kode rak wajib diisi',
+                'kode.unique'     => 'Kode rak sudah digunakan',
+                'kode.max'        => 'Kode rak maksimal 50 karakter',
+                'nama.required'   => 'Nama rak wajib diisi',
+                'nama.max'        => 'Nama rak maksimal 100 karakter',
+                'lokasi.required' => 'Lokasi rak wajib diisi',
+                'lokasi.max'      => 'Lokasi rak maksimal 100 karakter',
+            ]
+        );
 
         $rak->update($request->only(['kode', 'nama', 'lokasi']));
 
-        return redirect()->route('admin.raks.index')->with('success', 'Rak berhasil diupdate');
+        return redirect()
+            ->route('admin.raks.index')
+            ->with('success', 'Rak berhasil diupdate');
     }
 
     // Hapus rak
     public function destroy(Rak $rak)
     {
         $rak->delete();
-        return redirect()->route('admin.raks.index')->with('success', 'Rak berhasil dihapus');
+
+        return redirect()
+            ->route('admin.raks.index')
+            ->with('success', 'Rak berhasil dihapus');
     }
 
     // Detail rak

@@ -4,28 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Perpustakaan</title>
+
+    <!-- ✅ Tambahkan favicon/logo perpustakaan -->
+    <link rel="icon" href="{{ asset('assets/images/logos/ChatGPT_Image_Sep_15__2025__09_08_07_AM-removebg-preview.png') }}" type="image/png">
+
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="h-screen">
 
-    <!-- Background -->
     <div class="fixed inset-0 bg-cover bg-center" 
          style="background-image: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1600&q=80');">
         <div class="absolute inset-0 bg-black/60"></div>
     </div>
 
-    <!-- Login card -->
     <div class="flex items-center justify-center h-screen relative z-10">
         <div class="bg-black/70 rounded-xl shadow-lg w-96 p-8 flex flex-col items-center backdrop-blur">
 
-            <!-- Logo -->
             <img src="{{ asset('assets/images/logos/ChatGPT_Image_Sep_15__2025__09_08_07_AM-removebg-preview.png') }}" 
                  alt="Logo Perpustakaan" class="w-28 h-28 object-contain mb-6">
 
-            <!-- Welcome text -->
             <h2 class="text-2xl font-bold text-white mb-6 tracking-wide">LOGIN</h2>
 
-            <!-- Error message -->
             @if ($errors->any())
                 <div class="bg-red-500/20 text-red-300 p-2 rounded mb-4 text-sm w-full text-left">
                     <ul class="list-disc list-inside">
@@ -36,7 +35,6 @@
                 </div>
             @endif
 
-            <!-- Form -->
             <form method="POST" action="{{ route('login') }}" class="w-full">
                 @csrf
                 <div class="mb-4">
@@ -57,10 +55,9 @@
                 </button>
             </form>
 
-            <!-- Register -->
             <p class="mt-6 text-gray-400 text-sm">
                 Belum punya akun? 
-                <a href="#" class="text-blue-400 hover:underline">Register di sini</a>
+                <a href="{{ route('register') }}" class="text-blue-400 hover:underline">Register di sini</a>
             </p>
         </div>
     </div>

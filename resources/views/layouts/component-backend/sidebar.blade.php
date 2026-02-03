@@ -1,10 +1,11 @@
-<aside class="left-sidebar">
-  <div>
+<aside class="left-sidebar" style="height: 100vh; overflow-y: auto; position: fixed;">
+  <div class="d-flex flex-column h-100">
+
     <!-- Brand Logo -->
-    <div class="brand-logo d-flex align-items-center justify-content-between">
+    <div class="brand-logo d-flex align-items-center justify-content-between p-3 border-bottom">
       <a href="{{ url('/home') }}" class="text-nowrap logo-img">
         <img src="{{ asset('assets/images/logos/ChatGPT_Image_Sep_15__2025__09_08_07_AM-removebg-preview.png') }}" 
-             style="height: 110px; width: auto;" alt="Logo" />
+             style="height: 90px; width: auto;" alt="Logo" />
       </a>
       <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
         <i class="ti ti-x fs-8"></i>
@@ -12,10 +13,10 @@
     </div>
 
     <!-- Sidebar navigation -->
-    <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
-      <ul id="sidebarnav">
+    <nav class="sidebar-nav flex-grow-1 p-2">
+      <ul id="sidebarnav" class="list-unstyled">
 
-        <li class="nav-small-cap">
+        <li class="nav-small-cap mt-2">
           <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
           <span class="hide-menu">Main Menu</span>
         </li>
@@ -39,7 +40,7 @@
           </li>
         @endif
 
-        {{-- ADMIN MENU --}}
+        {{-- MENU ADMIN --}}
         @if(Auth::user()->role == 'admin')
           <li class="sidebar-item">
             <a class="sidebar-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" 
@@ -48,6 +49,7 @@
               <span class="hide-menu">User</span>
             </a>
           </li>
+
           <li class="sidebar-item">
             <a class="sidebar-link {{ request()->routeIs('admin.kategoris.*') ? 'active' : '' }}" 
                href="{{ route('admin.kategoris.index') }}">
@@ -55,6 +57,7 @@
               <span class="hide-menu">Kategori</span>
             </a>
           </li>
+
           <li class="sidebar-item">
             <a class="sidebar-link {{ request()->routeIs('admin.raks.*') ? 'active' : '' }}" 
                href="{{ route('admin.raks.index') }}">
@@ -64,7 +67,7 @@
           </li>
         @endif
 
-        {{-- MENU UNTUK ADMIN & PETUGAS --}}
+        {{-- MENU ADMIN & PETUGAS --}}
         @if(in_array(Auth::user()->role, ['admin', 'petugas']))
           <li class="sidebar-item">
             <a class="sidebar-link {{ request()->routeIs(Auth::user()->role . '.bukus.*') ? 'active' : '' }}" 
@@ -73,6 +76,7 @@
               <span class="hide-menu">Buku</span>
             </a>
           </li>
+
           <li class="sidebar-item">
             <a class="sidebar-link {{ request()->routeIs(Auth::user()->role . '.peminjamans.*') ? 'active' : '' }}" 
                href="{{ route(Auth::user()->role . '.peminjamans.index') }}">
@@ -80,6 +84,7 @@
               <span class="hide-menu">Peminjaman</span>
             </a>
           </li>
+
           <li class="sidebar-item">
             <a class="sidebar-link {{ request()->routeIs(Auth::user()->role . '.pengembalians.*') ? 'active' : '' }}" 
                href="{{ route(Auth::user()->role . '.pengembalians.index') }}">
@@ -87,6 +92,7 @@
               <span class="hide-menu">Pengembalian</span>
             </a>
           </li>
+
           <li class="sidebar-item">
             <a class="sidebar-link {{ request()->routeIs(Auth::user()->role . '.dendas.*') ? 'active' : '' }}" 
                href="{{ route(Auth::user()->role . '.dendas.index') }}">
@@ -96,18 +102,7 @@
           </li>
         @endif
 
-        {{-- SISWA MENU --}}
-        @if(Auth::user()->role == 'siswa')
-          <li class="sidebar-item">
-            <a class="sidebar-link {{ request()->routeIs('siswa.bukus.*') ? 'active' : '' }}" 
-               href="{{ route('siswa.bukus.index') }}">
-              <span><i class="ti ti-book"></i></span>
-              <span class="hide-menu">Lihat Buku</span>
-            </a>
-          </li>
-        @endif
-
-        {{-- MENU LAPORAN (KHUSUS ADMIN) --}}
+        {{-- LAPORAN ADMIN --}}
         @if(Auth::user()->role == 'admin')
           <li class="sidebar-item">
             <a class="sidebar-link {{ request()->routeIs('admin.laporans.*') ? 'active' : '' }}" 
@@ -118,6 +113,27 @@
           </li>
         @endif
 
+        {{-- HERO BANNER --}}
+        @if(Auth::user()->role == 'admin')
+          <li class="sidebar-item">
+            <a class="sidebar-link {{ request()->routeIs('admin.hero-banners.*') ? 'active' : '' }}" 
+               href="{{ route('admin.hero-banners.index') }}">
+              <span><i class="ti ti-photo"></i></span>
+              <span class="hide-menu">Hero Banner</span>
+            </a>
+          </li>
+        @endif
+
+        {{-- MENU LAINNYA → USER FRONTEND --}}
+          <li class="nav-small-cap mt-3">
+          <span class="hide-menu text-uppercase fw-bold text-muted">Menu Lainnya</span>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link" href="{{ url('/') }}">
+            <i class="ti ti-user"></i>
+            <span class="hide-menu">User</span>
+          </a>
+        </li>
       </ul>
     </nav>
   </div>

@@ -30,18 +30,18 @@
                     @enderror
                 </div>
 
-                <div class="mb-3">
+               <div class="mb-3">
                     <label for="kondisi_buku" class="form-label">Kondisi Buku</label>
                     <select name="kondisi_buku" id="kondisi_buku" class="form-select @error('kondisi_buku') is-invalid @enderror" required>
                         <option value="">-- Pilih Kondisi --</option>
                         <option value="baik" {{ old('kondisi_buku')=='baik' ? 'selected' : '' }}>Baik</option>
                         <option value="rusak" {{ old('kondisi_buku')=='rusak' ? 'selected' : '' }}>Rusak</option>
+                        <option value="hilang" {{ old('kondisi_buku')=='hilang' ? 'selected' : '' }}>Hilang</option>
                     </select>
                     @error('kondisi_buku')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
-
                 <div class="mb-3">
                     <label for="status" class="form-label">Status</label>
                     <select name="status" id="status" class="form-select @error('status') is-invalid @enderror" required>

@@ -32,10 +32,7 @@
                         {{ $labels[$user->role] ?? ucfirst($user->role) }}
                     </td>
                 </tr>
-                <tr>
-                    <th>Dibuat</th>
-                    <td>{{ $user->created_at->format('d M Y H:i') }}</td>
-                </tr>
+
             </table>
 
             <div class="mt-3">

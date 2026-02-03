@@ -9,8 +9,10 @@
         {{-- Card header --}}
         <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4;">
             <h3 class="mb-0 text-white">Daftar Peminjaman</h3>
-            <a href="{{ route('petugas.peminjamans.create') }}" class="btn" style="background-color: #1d37df; color: white; border: none;">
-                Tambah Data
+             <a href="{{ route('petugas.peminjamans.create') }}" 
+            class="btn" 
+            style="background-color: #26559b; color: white; border: none;">
+            Tambah Data
             </a>
         </div>
 

@@ -1,28 +1,50 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Buku;
+use App\Models\HeroBanner;
+use App\Models\Kategori;
+use App\Models\Peminjaman;
 
 class HomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
     public function index()
     {
-        return view('home');
+        // Ambil banner
+        $banners = HeroBanner::all();
+
+        // Total Buku
+        $totalBuku = Buku::count();
+
+        // Total Kategori
+        $totalKategori = Kategori::count();
+
+        // Total Peminjaman
+        $totalPeminjaman = Peminjaman::count();
+
+        // Total Pengembalian (ganti totalPenulis)
+        $totalPengembalian = Peminjaman::where('status', 'dikembalikan')->count();
+
+        // Redirect jika user login berdasarkan role
+        if (auth()->check()) {
+            $role = auth()->user()->role;
+
+            if ($role === 'admin') {
+                return redirect()->route('admin.dashboard');
+            }
+
+            if ($role === 'petugas') {
+                return redirect()->route('petugas.dashboard');
+            }
+        }
+
+        // Kirim data ke view
+        return view('home', compact(
+            'banners',
+            'totalBuku',
+            'totalKategori',
+            'totalPeminjaman',
+            'totalPengembalian' // <-- ganti dari totalPenulis
+        ));
     }
 }
