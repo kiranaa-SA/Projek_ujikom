@@ -4,147 +4,141 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Buku;
 use App\Models\Peminjaman;
-use App\Models\PeminjamanNotification;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PeminjamanController extends Controller
 {
+    // =========================
+    // LIST
+    // =========================
     public function index()
     {
-        $peminjamans = Peminjaman::with(['user', 'buku'])->latest()->get();
+        $peminjamans = Peminjaman::with('user', 'buku')
+            ->latest()
+            ->get();
+
         return view('admin.peminjamans.index', compact('peminjamans'));
     }
 
+    // =========================
+    // FORM CREATE
+    // =========================
     public function create()
     {
-        // hanya peminjaman yang masih dipinjam, dengan relasi user & buku
-        $peminjamans = Peminjaman::with('user', 'buku')
-            ->where('status', 'dipinjam')
-            ->get();
+        $users = User::all();
+        $bukus = Buku::where('stok', '>', 0)->get();
 
-        return view('admin.pengembalians.create', compact('peminjamans'));
+        return view('admin.peminjamans.create', compact('users', 'bukus'));
     }
 
+    // =========================
+    // STORE (🔥 FIXED)
+    // =========================
     public function store(Request $request)
     {
-        $request->validate(
-            [
-                'user_id'        => 'required|exists:users,id',
-                'buku_id'        => 'required|exists:bukus,id',
-                'tanggal_pinjam' => 'required|date',
-            ],
-            [
-                'user_id.required'        => 'User wajib dipilih',
-                'buku_id.required'        => 'Buku wajib dipilih',
-                'tanggal_pinjam.required' => 'Tanggal pinjam wajib diisi',
-            ]
-        );
-
-        Peminjaman::create([
-            'user_id'        => $request->user_id,
-            'buku_id'        => $request->buku_id,
-            'tanggal_pinjam' => $request->tanggal_pinjam,
-            'tenggat_tempo'  => Carbon::parse($request->tanggal_pinjam)->addDays(7),
-            'status'         => 'pending',
+        $request->validate([
+            'user_id'        => 'required|exists:users,id',
+            'buku_id'        => 'required|exists:bukus,id',
+            'tanggal_pinjam' => 'required|date',
         ]);
 
-        return redirect()
-            ->route('admin.peminjamans.index')
+        $buku = Buku::findOrFail($request->buku_id);
+
+        if ($buku->stok <= 0) {
+            return back()->with('error', 'Stok buku habis.')->withInput();
+        }
+
+        // 🔥 Generate kode otomatis
+        $lastId = Peminjaman::max('id') ?? 0;
+        $kode   = 'PMJ-' . str_pad($lastId + 1, 4, '0', STR_PAD_LEFT);
+
+        $tanggalPinjam = Carbon::parse($request->tanggal_pinjam);
+
+        // 🔥 Tenggat otomatis 7 hari
+        $tenggat = $tanggalPinjam->copy()->addDays(7);
+
+        Peminjaman::create([
+            'kode_peminjaman' => $kode,
+            'user_id'         => $request->user_id,
+            'buku_id'         => $request->buku_id,
+            'tanggal_pinjam'  => $tanggalPinjam,
+            'tenggat_tempo'   => $tenggat,
+            'status'          => 'dipinjam',
+        ]);
+
+        // Kurangi stok
+        $buku->decrement('stok');
+
+        return redirect()->route('admin.peminjamans.index')
             ->with('success', 'Peminjaman berhasil ditambahkan.');
     }
 
+    // =========================
+    // SHOW
+    // =========================
+    public function show($id)
+    {
+        $peminjaman = Peminjaman::with('user', 'buku')
+            ->findOrFail($id);
+
+        return view('admin.peminjamans.show', compact('peminjaman'));
+    }
+
+    // =========================
+    // EDIT
+    // =========================
     public function edit($id)
     {
         $peminjaman = Peminjaman::findOrFail($id);
-        $bukus      = Buku::all();
         $users      = User::all();
+        $bukus      = Buku::all();
 
-        return view('admin.peminjamans.edit', compact('peminjaman', 'bukus', 'users'));
+        return view('admin.peminjamans.edit', compact('peminjaman', 'users', 'bukus'));
     }
 
+    // =========================
+    // UPDATE
+    // =========================
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'user_id'        => 'required|exists:users,id',
+            'buku_id'        => 'required|exists:bukus,id',
+            'tanggal_pinjam' => 'required|date',
+            'tenggat_tempo'  => 'required|date|after_or_equal:tanggal_pinjam',
+            'status'         => 'required|in:dipinjam,dikembalikan',
+        ]);
+
         $peminjaman = Peminjaman::findOrFail($id);
 
-        $request->validate([
-            'status' => 'required|in:pending,dipinjam,ditolak,dikembalikan',
-        ]);
-
         $peminjaman->update([
-            'status' => $request->status,
+            'user_id'        => $request->user_id,
+            'buku_id'        => $request->buku_id,
+            'tanggal_pinjam' => $request->tanggal_pinjam,
+            'tenggat_tempo'  => $request->tenggat_tempo,
+            'status'         => $request->status,
         ]);
 
-        return redirect()
-            ->route('admin.peminjamans.index')
-            ->with('success', 'Data peminjaman berhasil diperbarui.');
+        return redirect()->route('admin.peminjamans.index')
+            ->with('success', 'Peminjaman berhasil diperbarui.');
     }
 
+    // =========================
+    // DELETE
+    // =========================
     public function destroy($id)
     {
-        $peminjaman = Peminjaman::with('buku')->findOrFail($id);
-
-        if ($peminjaman->status === 'dipinjam') {
-            $peminjaman->buku->increment('stok');
-        }
-
-        PeminjamanNotification::where('peminjaman_id', $peminjaman->id)->delete();
-        $peminjaman->delete();
-
-        return redirect()
-            ->route('admin.peminjamans.index')
-            ->with('success', 'Data peminjaman berhasil dihapus.');
-    }
-
-    // ✅ ACC
-    public function accept($id)
-    {
-        $peminjaman = Peminjaman::with('buku')->findOrFail($id);
-
-        if ($peminjaman->buku->stok < 1) {
-            return back()->with('error', 'Stok buku habis.');
-        }
-
-        $peminjaman->update([
-            'status'         => 'dipinjam',
-            'tanggal_pinjam' => Carbon::now(),
-            'tenggat_tempo'  => Carbon::now()->addDays(7),
-        ]);
-
-        $peminjaman->buku->decrement('stok');
-        PeminjamanNotification::where('peminjaman_id', $peminjaman->id)->delete();
-
-        return redirect()
-            ->route('admin.peminjamans.index')
-            ->with('success', 'Peminjaman telah disetujui.');
-    }
-
-    // ❌ Reject
-    public function reject($id)
-    {
         $peminjaman = Peminjaman::findOrFail($id);
 
-        $peminjaman->update(['status' => 'ditolak']);
-        PeminjamanNotification::where('peminjaman_id', $peminjaman->id)->delete();
-
-        return redirect()
-            ->route('admin.peminjamans.index')
-            ->with('success', 'Peminjaman telah ditolak.');
-    }
-
-    // 🔁 Kembali
-    public function kembali($id)
-    {
-        $peminjaman = Peminjaman::with('buku')->findOrFail($id);
-
         if ($peminjaman->status === 'dipinjam') {
-            $peminjaman->update(['status' => 'dikembalikan']);
             $peminjaman->buku->increment('stok');
         }
 
-        return redirect()
-            ->route('admin.peminjamans.index')
-            ->with('success', 'Buku berhasil dikembalikan.');
+        $peminjaman->delete();
+
+        return redirect()->route('admin.peminjamans.index')
+            ->with('success', 'Peminjaman berhasil dihapus.');
     }
 }

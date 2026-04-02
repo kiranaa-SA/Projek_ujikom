@@ -6,33 +6,65 @@ use App\Models\Buku;
 use App\Models\Peminjaman;
 use App\Models\Pengembalian;
 use App\Models\User;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // --- Statistik utama ---
+        // =========================
+        // Statistik utama
+        // =========================
         $totalBuku            = Buku::count();
         $totalUser            = User::count();
         $totalPeminjamanAktif = Peminjaman::where('status', 'dipinjam')->count();
         $totalPengembalian    = Pengembalian::count();
 
-        // --- Data untuk grafik ---
-        // ambil 7 hari terakhir
-        $dates  = collect(range(6, 0))->map(fn($i) => Carbon::now()->subDays($i)->toDateString());
-        $labels = $dates->map(fn($d) => Carbon::parse($d)->format('d M'))->toArray();
+        // =========================
+        // Data Peminjaman per Minggu
+        // =========================
+        $peminjaman = Peminjaman::select(
+            DB::raw('YEARWEEK(created_at) as minggu'),
+            DB::raw('COUNT(*) as total')
+        )
+            ->groupBy('minggu')
+            ->orderBy('minggu', 'asc')
+            ->limit(6)
+            ->get();
 
-        // hitung jumlah peminjaman dan pengembalian per tanggal
-        $jumlahPeminjaman = $dates->map(fn($d) =>
-            Peminjaman::whereDate('tanggal_pinjam', $d)->count()
-        )->toArray();
+        // =========================
+        // Data Pengembalian per Minggu
+        // =========================
+        $pengembalian = Pengembalian::select(
+            DB::raw('YEARWEEK(created_at) as minggu'),
+            DB::raw('COUNT(*) as total')
+        )
+            ->groupBy('minggu')
+            ->orderBy('minggu', 'asc')
+            ->limit(6)
+            ->get();
 
-        $jumlahPengembalian = $dates->map(fn($d) =>
-            Pengembalian::whereDate('tanggal_pengembalian', $d)->count()
-        )->toArray();
+        // =========================
+        // Label minggu konsisten
+        // =========================
+        $labels             = [];
+        $jumlahPeminjaman   = [];
+        $jumlahPengembalian = [];
 
-        // kirim ke view
+        $allWeeks = $peminjaman->pluck('minggu')
+            ->merge($pengembalian->pluck('minggu'))
+            ->unique()
+            ->sort();
+
+        foreach ($allWeeks as $week) {
+            $labels[]             = "Minggu " . $week;
+            $jumlahPeminjaman[]   = $peminjaman->firstWhere('minggu', $week)->total ?? 0;
+            $jumlahPengembalian[] = $pengembalian->firstWhere('minggu', $week)->total ?? 0;
+        }
+
+        // =========================
+        // Kirim ke view
+        // =========================
         return view('petugas.dashboard', compact(
             'totalBuku',
             'totalUser',

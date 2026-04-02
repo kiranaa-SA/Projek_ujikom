@@ -6,7 +6,7 @@
 <div class="container py-4">
     <h2 class="mb-4">Selamat Datang Petugas!</h2>
 
-    {{-- ==== Card Statistik ==== --}}
+    {{-- Card Statistik --}}
     <div class="row g-3 mb-4">
         <div class="col-md-3">
             <div class="card text-center bg-warning p-3 shadow-sm">
@@ -16,7 +16,7 @@
         </div>
         <div class="col-md-3">
             <div class="card text-center bg-primary p-3 shadow-sm">
-                <h6 class="text-white">Total Peminjaman Aktif</h6>
+                <h6 class="text-white">Peminjaman Aktif</h6>
                 <h3 class="text-white fw-bold">{{ $totalPeminjamanAktif }}</h3>
             </div>
         </div>
@@ -34,35 +34,32 @@
         </div>
     </div>
 
-    {{-- ==== Grafik Peminjaman vs Pengembalian ==== --}}
-    {{-- <div class="row g-3">
-        {{-- Grafik Batang --}}
+    {{-- Grafik Peminjaman vs Pengembalian --}}
+    <div class="row g-3">
         <div class="col-md-8">
             <div class="card p-3 shadow-sm">
-                <h6 class="mb-3">📊 Peminjaman vs Pengembalian (7 Hari Terakhir)</h6>
-                <canvas id="weeklyBarChart" height="180"></canvas>
+                <h6 class="mb-3">📊 Peminjaman vs Pengembalian (per Minggu)</h6>
+                <canvas id="weeklyBarChart"></canvas>
             </div>
         </div>
 
-        {{-- Grafik Donut --}}
         <div class="col-md-4">
             <div class="card p-3 shadow-sm">
                 <h6 class="mb-3">📈 Perbandingan Total</h6>
-                <canvas id="donutChart" height="180"></canvas>
+                <canvas id="donutChart"></canvas>
             </div>
         </div>
-    </div> --}}
+    </div>
 </div>
 
-{{-- ==== Script Chart.js ==== --}}
+{{-- Chart.js --}}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-{{-- <script>
-    // Ambil data dari controller
+<script>
     const labels = @json($labels);
     const jumlahPeminjaman = @json($jumlahPeminjaman);
     const jumlahPengembalian = @json($jumlahPengembalian);
 
-    // === Bar Chart (Peminjaman vs Pengembalian per hari) ===
+    // Bar Chart
     new Chart(document.getElementById('weeklyBarChart').getContext('2d'), {
         type: 'bar',
         data: {
@@ -71,15 +68,15 @@
                 {
                     label: 'Peminjaman',
                     data: jumlahPeminjaman,
-                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54,162,235,0.7)',
+                    borderColor: 'rgba(54,162,235,1)',
                     borderWidth: 1
                 },
                 {
                     label: 'Pengembalian',
                     data: jumlahPengembalian,
-                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(75,192,192,0.7)',
+                    borderColor: 'rgba(75,192,192,1)',
                     borderWidth: 1
                 }
             ]
@@ -91,18 +88,21 @@
         }
     });
 
-    // === Donut Chart (Total Peminjaman vs Pengembalian) ===
+    // Donut Chart
     new Chart(document.getElementById('donutChart').getContext('2d'), {
         type: 'doughnut',
         data: {
             labels: ['Peminjaman', 'Pengembalian'],
             datasets: [{
                 data: [
-                    jumlahPeminjaman.reduce((a, b) => a + b, 0),
-                    jumlahPengembalian.reduce((a, b) => a + b, 0)
+                    jumlahPeminjaman.reduce((a,b) => a+b, 0),
+                    jumlahPengembalian.reduce((a,b) => a+b, 0)
                 ],
-                backgroundColor: ['rgba(54, 162, 235, 0.7)', 'rgba(255, 99, 132, 0.7)'],
-                borderColor: ['#fff', '#fff'],
+                backgroundColor: [
+                    'rgba(54,162,235,0.7)',
+                    'rgba(75,192,192,0.7)'
+                ],
+                borderColor: ['#fff','#fff'],
                 borderWidth: 2
             }]
         },
@@ -111,5 +111,5 @@
             plugins: { legend: { position: 'bottom' } }
         }
     });
-</script> --}}
+</script>
 @endsection

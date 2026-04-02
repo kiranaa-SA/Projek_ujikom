@@ -5,8 +5,6 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Riwayat Peminjaman Buku - E-Perpus</title>
-  <meta name="description" content="">
-  <meta name="keywords" content="">
 
   <!-- Favicons -->
   <link href="{{ asset('frontend/assets/img/favicon.png') }}" rel="icon">
@@ -61,20 +59,25 @@
                   <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
                     <td>{{ $p->buku->judul ?? '-' }}</td>
-                    <td class="text-center">{{ \Carbon\Carbon::parse($p->tanggal_pinjam)->format('d M Y') }}</td>
+                    <td class="text-center">{{ $p->tanggal_pinjam ? \Carbon\Carbon::parse($p->tanggal_pinjam)->format('d M Y') : '-' }}</td>
+                    <td class="text-center">{{ $p->tenggat_tempo ? \Carbon\Carbon::parse($p->tenggat_tempo)->format('d M Y') : '-' }}</td>
                     <td class="text-center">
-                      {{ $p->tenggat_tempo ? \Carbon\Carbon::parse($p->tenggat_tempo)->format('d M Y') : '-' }}
-                    </td>
-                    <td class="text-center">
-                      @if($p->status == 'dipinjam')
-                        <span class="badge bg-success">Dipinjam</span>
-                      @elseif($p->status == 'ditolak')
-                        <span class="badge bg-danger">Ditolak</span>
-                      @elseif($p->status == 'selesai')
-                        <span class="badge bg-primary">Selesai</span>
-                      @else
-                        <span class="badge bg-secondary">Menunggu</span>
-                      @endif
+                      @switch($p->status ?? '')
+                        @case('pending')
+                          <span class="badge bg-secondary">Menunggu</span>
+                          @break
+                        @case('dipinjam')
+                          <span class="badge bg-success">Dipinjam</span>
+                          @break
+                        @case('dikembalikan')
+                          <span class="badge bg-primary">Selesai</span>
+                          @break
+                        @case('hilang')
+                          <span class="badge bg-danger">Hilang</span>
+                          @break
+                        @default
+                          <span class="badge bg-secondary">Tidak diketahui</span>
+                      @endswitch
                     </td>
                   </tr>
                 @endforeach

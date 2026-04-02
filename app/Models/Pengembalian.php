@@ -9,11 +9,22 @@ class Pengembalian extends Model
     use HasFactory;
 
     protected $fillable = [
-        'peminjaman_id', 'tanggal_pengembalian', 'terlambat', 'kondisi', 'denda',
+        'kode_pengembalian',
+        'peminjaman_id',
+        'tanggal_pengembalian',
+        'terlambat',
+        'kondisi',
+        'denda',
     ];
 
     public function peminjaman()
     {
         return $this->belongsTo(Peminjaman::class);
+    }
+
+    // 🔥 WAJIB ADA biar whereDoesntHave('denda') & edit jalan
+    public function denda()
+    {
+        return $this->hasOne(Denda::class);
     }
 }

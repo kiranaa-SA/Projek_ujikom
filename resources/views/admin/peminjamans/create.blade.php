@@ -5,43 +5,28 @@
 @section('content')
 <div class="container py-4">
     <div class="card shadow-sm">
-        {{-- Card header --}}
-        <div class="card-header" style="background-color: #457de4;">
-            <h3 class="mb-0 text-white">Tambah Peminjaman</h3>
+
+        {{-- Header --}}
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Tambah Peminjaman</h3>
         </div>
 
-        {{-- Card body --}}
+        {{-- Body --}}
         <div class="card-body">
-            {{-- Error Alert --}}
-            @if ($errors->any())
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <strong>Ups!</strong> Ada beberapa masalah dengan inputan kamu.
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
-
-            {{-- Form --}}
-            <form action="{{ route('admin.peminjamans.store') }}" method="POST" class="p-3">
+            <form action="{{ route('admin.peminjamans.store') }}" method="POST">
                 @csrf
 
-                {{-- ✅ KODE PEMINJAMAN (OTOMATIS) --}}
+                {{-- Kode Peminjaman --}}
                 <div class="mb-3">
-                    <label class="form-label fw-semibold">Kode Peminjaman</label>
-                    <input type="text"
-                           class="form-control"
-                           value="Otomatis oleh sistem"
-                           readonly>
+                    <label class="form-label">Kode Peminjaman</label>
+                    <input type="text" class="form-control" value="Otomatis oleh sistem" readonly>
                 </div>
 
+                {{-- User --}}
                 <div class="mb-3">
-                    <label for="user_id" class="form-label fw-semibold">User</label>
+                    <label for="user_id" class="form-label">User</label>
                     <select name="user_id" id="user_id"
-                            class="form-select @error('user_id') is-invalid @enderror" required>
+                        class="form-select @error('user_id') is-invalid @enderror" required>
                         <option value="">-- Pilih User --</option>
                         @foreach($users as $user)
                             <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
@@ -54,10 +39,11 @@
                     @enderror
                 </div>
 
+                {{-- Buku --}}
                 <div class="mb-3">
-                    <label for="buku_id" class="form-label fw-semibold">Buku</label>
+                    <label for="buku_id" class="form-label">Buku</label>
                     <select name="buku_id" id="buku_id"
-                            class="form-select @error('buku_id') is-invalid @enderror" required>
+                        class="form-select @error('buku_id') is-invalid @enderror" required>
                         <option value="">-- Pilih Buku --</option>
                         @foreach($bukus as $buku)
                             <option value="{{ $buku->id }}" {{ old('buku_id') == $buku->id ? 'selected' : '' }}>
@@ -70,25 +56,31 @@
                     @enderror
                 </div>
 
+                {{-- Tanggal Pinjam --}}
                 <div class="mb-3">
-                    <label for="tanggal_pinjam" class="form-label fw-semibold">Tanggal Pinjam</label>
-                    <input type="date" name="tanggal_pinjam" id="tanggal_pinjam"
-                           class="form-control @error('tanggal_pinjam') is-invalid @enderror"
-                           value="{{ old('tanggal_pinjam', date('Y-m-d')) }}" required>
+                    <label for="tanggal_pinjam" class="form-label">Tanggal Pinjam</label>
+                    <input type="date"
+                        name="tanggal_pinjam"
+                        id="tanggal_pinjam"
+                        class="form-control @error('tanggal_pinjam') is-invalid @enderror"
+                        value="{{ old('tanggal_pinjam', date('Y-m-d')) }}"
+                        required>
                     @error('tanggal_pinjam')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
-                {{-- STATUS DISET PENDING OLEH SISTEM --}}
+                {{-- Status default --}}
                 <input type="hidden" name="status" value="pending">
 
-                <div class="mt-4">
-                    <button type="submit" class="btn btn-primary me-2">Simpan</button>
-                    <a href="{{ route('admin.peminjamans.index') }}" class="btn btn-secondary">Batal</a>
-                </div>
+                {{-- Tombol --}}
+                <button class="btn btn-primary">Simpan</button>
+                <a href="{{ route('admin.peminjamans.index') }}" class="btn btn-secondary">
+                    Batal
+                </a>
             </form>
         </div>
+
     </div>
 </div>
 @endsection

@@ -8,68 +8,101 @@ use Illuminate\Http\Request;
 
 class DendaController extends Controller
 {
+    // =========================
+    // LIST DENDA
+    // =========================
     public function index()
     {
-        $dendas = Denda::with('pengembalian.peminjaman.user', 'pengembalian.peminjaman.buku')->get();
+        $dendas = Denda::with('pengembalian.peminjaman.user', 'pengembalian.peminjaman.buku')
+            ->latest() // biar data baru muncul paling atas
+            ->get();
+
         return view('admin.dendas.index', compact('dendas'));
     }
 
+    // =========================
+    // FORM CREATE
+    // =========================
     public function create()
     {
-        // Ambil data pengembalian (karena denda terkait pengembalian)
-        $pengembalians = Pengembalian::with('peminjaman.user', 'peminjaman.buku')->get();
+        $pengembalians = Pengembalian::with('peminjaman.user', 'peminjaman.buku')
+            ->whereDoesntHave('denda') // supaya tidak dobel
+            ->latest()
+            ->get();
+
         return view('admin.dendas.create', compact('pengembalians'));
     }
 
+    // =========================
+    // STORE
+    // =========================
     public function store(Request $request)
     {
         $request->validate([
             'pengembalian_id' => 'required|exists:pengembalians,id',
-            'kondisi_buku'    => 'required|in:baik,rusak',
             'status'          => 'required|in:belum_dibayar,lunas',
         ]);
 
         Denda::create([
             'pengembalian_id' => $request->pengembalian_id,
-            'kondisi_buku'    => $request->kondisi_buku,
             'status'          => $request->status,
         ]);
 
-        return redirect()->route('admin.dendas.index')->with('success', 'Denda berhasil ditambahkan.');
+        return redirect()->route('admin.dendas.index')
+            ->with('success', 'Denda berhasil ditambahkan.');
     }
 
+    // =========================
+    // SHOW
+    // =========================
     public function show(Denda $denda)
     {
         $denda->load('pengembalian.peminjaman.user', 'pengembalian.peminjaman.buku');
+
         return view('admin.dendas.show', compact('denda'));
     }
 
+    // =========================
+    // EDIT
+    // =========================
     public function edit(Denda $denda)
     {
-        $pengembalians = Pengembalian::with('peminjaman.user', 'peminjaman.buku')->get();
+        // 🔥 penting: tetap tampilkan pengembalian milik denda ini
+        $pengembalians = Pengembalian::with('peminjaman.user', 'peminjaman.buku')
+            ->whereDoesntHave('denda')
+            ->orWhere('id', $denda->pengembalian_id)
+            ->get();
+
         return view('admin.dendas.edit', compact('denda', 'pengembalians'));
     }
 
+    // =========================
+    // UPDATE
+    // =========================
     public function update(Request $request, Denda $denda)
     {
         $request->validate([
             'pengembalian_id' => 'required|exists:pengembalians,id',
-            'kondisi_buku'    => 'required|in:baik,rusak',
             'status'          => 'required|in:belum_dibayar,lunas',
         ]);
 
         $denda->update([
             'pengembalian_id' => $request->pengembalian_id,
-            'kondisi_buku'    => $request->kondisi_buku,
             'status'          => $request->status,
         ]);
 
-        return redirect()->route('admin.dendas.index')->with('success', 'Denda berhasil diupdate.');
+        return redirect()->route('admin.dendas.index')
+            ->with('success', 'Denda berhasil diupdate.');
     }
 
+    // =========================
+    // DELETE
+    // =========================
     public function destroy(Denda $denda)
     {
         $denda->delete();
-        return redirect()->route('admin.dendas.index')->with('success', 'Denda berhasil dihapus.');
+
+        return redirect()->route('admin.dendas.index')
+            ->with('success', 'Denda berhasil dihapus.');
     }
 }

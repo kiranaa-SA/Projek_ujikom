@@ -1,6 +1,6 @@
 @extends('layouts.backend')
 
-@section('title', 'Petugas Perpus - Buku')
+@section('title', 'Admin Perpus - Buku')
 
 @section('content')
 <div class="container py-4">
@@ -8,11 +8,12 @@
         <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4;">
             <h3 class="mb-0 text-white">Daftar Buku</h3>
             <a href="{{ route('petugas.bukus.create') }}" 
-            class="btn" 
-            style="background-color: #26559b; color: white; border: none;">
-            Tambah Data
+               class="btn" 
+               style="background-color: #26559b; color: white; border: none;">
+                Tambah Data
             </a>
         </div>
+
         <div class="card-body">
             @if(session('success'))
                 <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
@@ -31,7 +32,7 @@
                             <th>Deskripsi</th>
                             <th>Penulis</th>
                             <th>Tahun Terbit</th>
-                            <th>Gambar</th> {{-- Pindah ke sini --}}
+                            <th>Gambar</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -46,22 +47,33 @@
                             <td>{{ $buku->tahun_terbit }}</td>
                             <td>
                                 @if($buku->gambar)
-                                    <img src="{{ asset('storage/' . $buku->gambar) }}" alt="{{ $buku->judul }}" width="60">
+                                    <img src="{{ asset('storage/' . $buku->gambar) }}" 
+                                         alt="{{ $buku->judul }}" 
+                                         width="60">
                                 @else
                                     <span class="text-muted">Tidak ada</span>
                                 @endif
                             </td>
                             <td class="text-nowrap">
-                                <a href="{{ route('petugas.bukus.show', $buku->id) }}" class="btn btn-info btn-sm mb-1" title="Detail">
+                                <a href="{{ route('petugas.bukus.show', $buku->id) }}" 
+                                   class="btn btn-info btn-sm mb-1" title="Detail">
                                     <i class="bi bi-eye"></i>
                                 </a>
-                                <a href="{{ route('petugas.bukus.edit', $buku->id) }}" class="btn btn-warning btn-sm mb-1" title="Edit">
+
+                                <a href="{{ route('petugas.bukus.edit', $buku->id) }}" 
+                                   class="btn btn-warning btn-sm mb-1" title="Edit">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
-                                <form action="{{ route('petugas.bukus.destroy', $buku->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin hapus buku ini?')">
+
+                                <form action="{{ route('petugas.bukus.destroy', $buku->id) }}" 
+                                      method="POST" 
+                                      class="d-inline"
+                                      onsubmit="return confirm('Yakin hapus buku ini?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm mb-1" title="Hapus">
+                                    <button type="submit" 
+                                            class="btn btn-danger btn-sm mb-1" 
+                                            title="Hapus">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
@@ -69,7 +81,9 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="text-center text-muted py-4">Belum ada data buku</td>
+                            <td colspan="8" class="text-center text-muted py-4">
+                                Belum ada data buku
+                            </td>
                         </tr>
                         @endforelse
                     </tbody>

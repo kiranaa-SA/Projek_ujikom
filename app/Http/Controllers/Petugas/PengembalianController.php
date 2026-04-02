@@ -2,24 +2,41 @@
 namespace App\Http\Controllers\Petugas;
 
 use App\Http\Controllers\Controller;
+use App\Models\Laporan;
 use App\Models\Peminjaman;
 use App\Models\Pengembalian;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PengembalianController extends Controller
 {
+    // =========================
+    // INDEX
+    // =========================
     public function index()
     {
-        $pengembalians = Pengembalian::with('peminjaman.user', 'peminjaman.buku')->get();
+        $pengembalians = Pengembalian::with('peminjaman.user', 'peminjaman.buku')
+            ->latest()
+            ->get();
+
         return view('petugas.pengembalians.index', compact('pengembalians'));
     }
 
+    // =========================
+    // CREATE
+    // =========================
     public function create()
     {
-        $peminjamans = Peminjaman::all();
+        $peminjamans = Peminjaman::where('status', 'dipinjam')
+            ->with('user', 'buku')
+            ->get();
+
         return view('petugas.pengembalians.create', compact('peminjamans'));
     }
 
+    // =========================
+    // STORE
+    // =========================
     public function store(Request $request)
     {
         $request->validate([
@@ -28,94 +45,144 @@ class PengembalianController extends Controller
             'kondisi'              => 'required|in:baik,rusak,hilang',
         ]);
 
-        $peminjaman = Peminjaman::findOrFail($request->peminjaman_id);
+        $peminjaman = Peminjaman::with('buku', 'user')
+            ->findOrFail($request->peminjaman_id);
 
-        // hitung keterlambatan
-        $tanggalKembali = new \DateTime($request->tanggal_pengembalian);
-        $jatuhTempo     = new \DateTime($peminjaman->tenggat_tempo);
-        $terlambat      = 0;
-        if ($tanggalKembali > $jatuhTempo) {
-            $terlambat = $tanggalKembali->diff($jatuhTempo)->days;
-        }
+        $lastId            = Pengembalian::max('id') ?? 0;
+        $kode_pengembalian = 'KMB-' . str_pad($lastId + 1, 4, '0', STR_PAD_LEFT);
 
-        // hitung denda otomatis
-        if ($request->kondisi == 'hilang') {
-            $denda = 50000; // hilang langsung 50rb
+        $tanggalKembali = Carbon::parse($request->tanggal_pengembalian);
+        $jatuhTempo     = Carbon::parse($peminjaman->tenggat_tempo);
+
+        // Anti minus
+        if ($tanggalKembali->gt($jatuhTempo)) {
+            $terlambat = $jatuhTempo->diffInDays($tanggalKembali);
         } else {
-            $denda = $terlambat * 5000; // denda keterlambatan
-            if ($request->kondisi == 'rusak') {
-                $denda += 10000; // tambahan rusak
-            }
+            $terlambat = 0;
         }
 
-        Pengembalian::create([
-            'peminjaman_id'        => $request->peminjaman_id,
+        // Hitung denda kombinasi
+        $dendaTerlambat = $terlambat * 5000;
+
+        $dendaKondisi = match ($request->kondisi) {
+            'rusak'  => 35000,
+            'hilang' => 50000,
+            default  => 0,
+        };
+
+        $denda = $dendaTerlambat + $dendaKondisi;
+
+        $pengembalian = Pengembalian::create([
+            'kode_pengembalian'    => $kode_pengembalian,
+            'peminjaman_id'        => $peminjaman->id,
             'tanggal_pengembalian' => $request->tanggal_pengembalian,
             'terlambat'            => $terlambat,
             'kondisi'              => $request->kondisi,
             'denda'                => $denda,
         ]);
 
+        // Update status peminjaman
+        $peminjaman->update([
+            'status' => 'dikembalikan',
+        ]);
+
+        // Tambah stok jika tidak hilang
+        if ($request->kondisi !== 'hilang') {
+            $peminjaman->buku->increment('stok');
+        }
+
+        // Simpan laporan
+        Laporan::create([
+            'peminjaman_id'   => $peminjaman->id,
+            'pengembalian_id' => $pengembalian->id,
+            'kondisi_buku'    => $request->kondisi,
+            'tanggal'         => $request->tanggal_pengembalian,
+        ]);
+
         return redirect()->route('petugas.pengembalians.index')
-            ->with('success', 'Data pengembalian berhasil ditambahkan');
+            ->with('success', 'Pengembalian berhasil ditambahkan. Denda: Rp ' . number_format($denda, 0, ',', '.'));
     }
 
-    public function show(Pengembalian $pengembalian)
+    // =========================
+    // SHOW
+    // =========================
+    public function show($id)
     {
-        $pengembalian->load('peminjaman.user', 'peminjaman.buku');
+        $pengembalian = Pengembalian::with('peminjaman.user', 'peminjaman.buku')
+            ->findOrFail($id);
+
         return view('petugas.pengembalians.show', compact('pengembalian'));
     }
 
-    public function edit(Pengembalian $pengembalian)
+    // =========================
+    // EDIT
+    // =========================
+    public function edit($id)
     {
-        $peminjamans = Peminjaman::all();
+        $pengembalian = Pengembalian::with('peminjaman.user', 'peminjaman.buku')
+            ->findOrFail($id);
+
+        $peminjamans = Peminjaman::with('user', 'buku')->get();
+
         return view('petugas.pengembalians.edit', compact('pengembalian', 'peminjamans'));
     }
 
-    public function update(Request $request, Pengembalian $pengembalian)
+    // =========================
+    // UPDATE
+    // =========================
+    public function update(Request $request, $id)
     {
         $request->validate([
-            'peminjaman_id'        => 'required|exists:peminjamans,id',
             'tanggal_pengembalian' => 'required|date',
             'kondisi'              => 'required|in:baik,rusak,hilang',
         ]);
 
-        $peminjaman = Peminjaman::findOrFail($request->peminjaman_id);
+        $pengembalian = Pengembalian::findOrFail($id);
+        $peminjaman   = $pengembalian->peminjaman;
 
-        // hitung keterlambatan
-        $tanggalKembali = new \DateTime($request->tanggal_pengembalian);
-        $jatuhTempo     = new \DateTime($peminjaman->tenggat_tempo);
-        $terlambat      = 0;
-        if ($tanggalKembali > $jatuhTempo) {
-            $terlambat = $tanggalKembali->diff($jatuhTempo)->days;
-        }
+        $tanggalKembali = Carbon::parse($request->tanggal_pengembalian);
+        $jatuhTempo     = Carbon::parse($peminjaman->tenggat_tempo);
 
-        // hitung denda otomatis
-        if ($request->kondisi == 'hilang') {
-            $denda = 50000;
+        if ($tanggalKembali->gt($jatuhTempo)) {
+            $terlambat = $jatuhTempo->diffInDays($tanggalKembali);
         } else {
-            $denda = $terlambat * 5000;
-            if ($request->kondisi == 'rusak') {
-                $denda += 10000;
-            }
+            $terlambat = 0;
         }
+
+        $dendaTerlambat = $terlambat * 5000;
+
+        $dendaKondisi = match ($request->kondisi) {
+            'rusak'  => 35000,
+            'hilang' => 50000,
+            default  => 0,
+        };
+
+        $denda = $dendaTerlambat + $dendaKondisi;
 
         $pengembalian->update([
-            'peminjaman_id'        => $request->peminjaman_id,
             'tanggal_pengembalian' => $request->tanggal_pengembalian,
-            'terlambat'            => $terlambat,
             'kondisi'              => $request->kondisi,
+            'terlambat'            => $terlambat,
             'denda'                => $denda,
         ]);
 
+        $peminjaman->update([
+            'status' => 'dikembalikan',
+        ]);
+
         return redirect()->route('petugas.pengembalians.index')
-            ->with('success', 'Data pengembalian berhasil diperbarui');
+            ->with('success', 'Pengembalian berhasil diperbarui. Denda: Rp ' . number_format($denda, 0, ',', '.'));
     }
 
-    public function destroy(Pengembalian $pengembalian)
+    // =========================
+    // DELETE
+    // =========================
+    public function destroy($id)
     {
+        $pengembalian = Pengembalian::findOrFail($id);
         $pengembalian->delete();
+
         return redirect()->route('petugas.pengembalians.index')
-            ->with('success', 'Data pengembalian berhasil dihapus');
+            ->with('success', 'Pengembalian berhasil dihapus');
     }
 }

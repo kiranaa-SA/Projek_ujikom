@@ -19,7 +19,7 @@
           </div>
 
           <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
-            <img src="{{('frontend\assets\img\Interior of a public library that is abstractly blurred bookshelves and room are blurred _ Premium AI-generated image.jpeg')}}" class="img-fluid" alt="">
+            <img src="{{('frontend/WhatsApp Image 2026-02-03 at 07.55.57.jpeg')}}" class="img-fluid" alt="">
           </div>
 
         </div>

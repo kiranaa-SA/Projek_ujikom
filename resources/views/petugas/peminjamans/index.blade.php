@@ -4,76 +4,114 @@
 
 @section('content')
 <div class="container py-4">
-    {{-- Card utama --}}
     <div class="card shadow-sm">
-        {{-- Card header --}}
+        {{-- Header --}}
         <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4;">
             <h3 class="mb-0 text-white">Daftar Peminjaman</h3>
-             <a href="{{ route('petugas.peminjamans.create') }}" 
-            class="btn" 
-            style="background-color: #26559b; color: white; border: none;">
-            Tambah Data
+            <a href="{{ route('petugas.peminjamans.create') }}"
+               class="btn"
+               style="background-color: #26559b; color: white; border: none;">
+               Tambah Data
             </a>
         </div>
 
-        {{-- Card body --}}
+        {{-- Body --}}
         <div class="card-body">
             @if(session('success'))
-                <div class="alert alert-success text-center">{{ session('success') }}</div>
+                <div class="alert alert-success text-center">
+                    {{ session('success') }}
+                </div>
             @endif
 
             <div class="table-responsive">
                 <table class="table table-bordered table-hover align-middle text-center mb-0">
-                    <thead style="background-color: #e3f2fd; color: #212529;">
+                    <thead style="background-color: #e3f2fd;">
                         <tr>
-                            <th style="width:5%;">No</th>
-                            <th style="width:15%;">User</th>
-                            <th style="width:20%;">Buku</th>
-                            <th style="width:12%;">Tanggal Pinjam</th>
-                            <th style="width:12%;">Tenggat Tempo</th>
-                            <th style="width:10%;">Status</th>
-                            <th style="width:20%;">Aksi</th>
+                            <th>No</th>
+                            <th>Kode Peminjaman</th>
+                            <th>User</th>
+                            <th>Buku</th>
+                            <th>Tanggal Pinjam</th>
+                            <th>Tenggat Tempo</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($peminjamans as $peminjaman)
-                        <tr class="text-nowrap">
+                        <tr>
                             <td>{{ $loop->iteration }}</td>
+                            <td class="fw-semibold text-primary">
+                                {{ $peminjaman->kode_peminjaman }}
+                            </td>
                             <td>{{ $peminjaman->user->name ?? '-' }}</td>
-                            <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis;">{{ $peminjaman->buku->judul ?? '-' }}</td>
-                            <td>{{ $peminjaman->tanggal_pinjam ?? '-' }}</td>
-                            <td>{{ $peminjaman->tenggat_tempo ?? '-' }}</td>
+                            <td>{{ $peminjaman->buku->judul ?? '-' }}</td>
+                            <td>{{ $peminjaman->tanggal_pinjam }}</td>
+                            <td>{{ $peminjaman->tenggat_tempo }}</td>
+
+                            {{-- STATUS --}}
                             <td>
-                                @if($peminjaman->status == 'dipinjam')
-                                    <span class="badge bg-warning text-dark">Dipinjam</span>
-                                @else
-                                    <span class="badge bg-success">Dikembalikan</span>
-                                @endif
+                                @switch($peminjaman->status)
+                                    @case('pending')
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                        @break
+                                    @case('dipinjam')
+                                        <span class="badge bg-success">Dipinjam</span>
+                                        @break
+                                    @case('dikembalikan')
+                                        <span class="badge bg-primary">Dikembalikan</span>
+                                        @break
+                                    @case('ditolak')
+                                        <span class="badge bg-danger">Ditolak</span>
+                                        @break
+                                    @default
+                                        <span class="badge bg-secondary">Tidak diketahui</span>
+                                @endswitch
                             </td>
-                            <td class="text-nowrap">
-                                <a href="{{ route('petugas.peminjamans.show', $peminjaman->id) }}" class="btn btn-info btn-sm mb-1" title="Detail">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                                <a href="{{ route('petugas.peminjamans.edit', $peminjaman->id) }}" class="btn btn-warning btn-sm mb-1" title="Edit">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-                                <form action="{{ route('petugas.peminjamans.destroy', $peminjaman->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin hapus peminjaman ini?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm mb-1" title="Hapus">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
+
+                            {{-- AKSI --}}
+                            <td>
+                                <div class="d-flex justify-content-center gap-2">
+
+                                    {{-- Jika status PENDING --}}
+                                    @if($peminjaman->status === 'pending')
+                                        <form action="{{ route('petugas.peminjamans.accept', $peminjaman->id) }}" method="POST">
+                                            @csrf
+                                            <button class="btn btn-success btn-sm" title="Setujui">
+                                                <i class="bi bi-check-circle"></i>
+                                            </button>
+                                        </form>
+
+                                        <form action="{{ route('petugas.peminjamans.reject', $peminjaman->id) }}" method="POST">
+                                            @csrf
+                                            <button class="btn btn-danger btn-sm" title="Tolak">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        </form>
+
+                                    {{-- Jika bukan pending --}}
+                                    @else
+                                        <a href="{{ route('petugas.peminjamans.show', $peminjaman->id) }}"
+                                           class="btn btn-info btn-sm" title="Detail">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    @endif
+
+                                </div>
                             </td>
+
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-4">Belum ada data peminjaman</td>
+                            <td colspan="8" class="text-muted py-4">
+                                Belum ada data peminjaman
+                            </td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
+
         </div>
     </div>
 </div>

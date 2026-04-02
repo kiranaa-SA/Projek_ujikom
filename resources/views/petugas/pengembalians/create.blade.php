@@ -1,88 +1,133 @@
 @extends('layouts.backend')
 
-@section('title', 'Petugas Perpus - Tambah Pengembalian')
+@section('title', 'Tambah Pengembalian')
 
 @section('content')
 <div class="container py-4">
     <div class="card shadow-sm">
-        {{-- Header --}}
-        <div class="card-header" style="background-color: #457de4;">
-            <h3 class="mb-0 text-white">Tambah Pengembalian</h3>
+        <div class="card-header bg-primary text-white">
+            <h3>Tambah Pengembalian</h3>
         </div>
 
-        {{-- Body --}}
         <div class="card-body">
-            {{-- Error Alert --}}
-            @if ($errors->any())
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <strong>Ups!</strong> Ada beberapa masalah dengan inputan kamu.
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
-
-            {{-- Form --}}
             <form action="{{ route('petugas.pengembalians.store') }}" method="POST">
                 @csrf
 
                 {{-- Pilih Peminjaman --}}
                 <div class="mb-3">
-                    <label for="peminjaman_id" class="form-label fw-semibold">Peminjaman</label>
+                    <label class="form-label fw-semibold">Peminjaman</label>
                     <select name="peminjaman_id" id="peminjaman_id"
-                            class="form-select @error('peminjaman_id') is-invalid @enderror" required>
-                        <option value="">-- Pilih Peminjam --</option>
+                        class="form-select select-search" required>
+                        <option value="">-- Pilih Peminjaman --</option>
                         @foreach($peminjamans as $p)
-                            <option value="{{ $p->id }}" {{ old('peminjaman_id') == $p->id ? 'selected' : '' }}>
-                                {{ $p->user->user ?? '-' }} - {{ $p->buku->judul ?? '-' }}
-                                (Pinjam: {{ $p->tanggal_pinjam }}, Tempo: {{ $p->tenggat_tempo }})
+                            <option value="{{ $p->id }}"
+                                data-user="{{ $p->user->name }}"
+                                data-buku="{{ $p->buku->judul }}"
+                                data-tanggal="{{ $p->tanggal_pinjam }}"
+                                data-tenggat="{{ $p->tenggat_tempo }}"
+                                data-status="{{ $p->status }}">
+                                {{ $p->user->name }} - {{ $p->buku->judul }}
                             </option>
                         @endforeach
                     </select>
-                    @error('peminjaman_id')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
                 </div>
 
-                {{-- Tanggal Pengembalian --}}
-                <div class="mb-3">
-                    <label for="tanggal_pengembalian" class="form-label fw-semibold">Tanggal Pengembalian</label>
-                    <input type="date" name="tanggal_pengembalian" id="tanggal_pengembalian"
-                           class="form-control @error('tanggal_pengembalian') is-invalid @enderror"
-                           value="{{ old('tanggal_pengembalian', date('Y-m-d')) }}" required>
-                    @error('tanggal_pengembalian')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                {{-- Informasi Otomatis --}}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Peminjam</label>
+                        <input type="text" id="nama_peminjam" class="form-control" readonly>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Buku</label>
+                        <input type="text" id="nama_buku" class="form-control" readonly>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Tanggal Pinjam</label>
+                        <input type="date" id="tanggal_pinjam" class="form-control" readonly>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Tenggat Waktu</label>
+                        <input type="date" id="tenggat_tempo" class="form-control" readonly>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Status Buku</label>
+                        <input type="text" id="status_buku" class="form-control" readonly>
+                    </div>
                 </div>
 
                 {{-- Kondisi Buku --}}
                 <div class="mb-3">
-                    <label for="kondisi" class="form-label fw-semibold">Kondisi Buku</label>
-                    <select name="kondisi" id="kondisi"
-                            class="form-select @error('kondisi') is-invalid @enderror" required>
-                        <option value="baik" {{ old('kondisi') == 'baik' ? 'selected' : '' }}>Baik</option>
-                        <option value="rusak" {{ old('kondisi') == 'rusak' ? 'selected' : '' }}>Rusak</option>
-                        <option value="hilang" {{ old('kondisi') == 'hilang' ? 'selected' : '' }}>Hilang</option>
+                    <label class="form-label fw-semibold">Kondisi Buku</label>
+                    <select name="kondisi" class="form-select" required>
+                        <option value="baik">Baik</option>
+                        <option value="rusak">Rusak</option>
+                        <option value="hilang">Hilang</option>
                     </select>
-                    @error('kondisi')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
                 </div>
 
-                {{-- Tombol --}}
-                <div class="d-flex justify-content-between mt-4">
-                    <a href="{{ route('petugas.pengembalians.index') }}" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left"></i> Kembali
-                    </a>
-                    <button type="submit" class="btn btn-primary">
+                {{-- Tanggal Pengembalian --}}
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Tanggal Pengembalian</label>
+                    <input type="date" name="tanggal_pengembalian"
+                        class="form-control"
+                        value="{{ date('Y-m-d') }}" required>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary">
                         <i class="bi bi-save"></i> Simpan
                     </button>
+                    <a href="{{ route('petugas.pengembalians.index') }}" class="btn btn-secondary">
+                        Batal
+                    </a>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+{{-- ================= SELECT2 ================= --}}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('.select-search').select2({
+            placeholder: "-- Pilih Peminjaman --",
+            allowClear: true,
+            width: '100%'
+        });
+    });
+
+    const peminjamanSelect = document.getElementById('peminjaman_id');
+    const namaPeminjam = document.getElementById('nama_peminjam');
+    const namaBuku = document.getElementById('nama_buku');
+    const tanggalPinjam = document.getElementById('tanggal_pinjam');
+    const tenggatTempo = document.getElementById('tenggat_tempo');
+    const statusBuku = document.getElementById('status_buku');
+
+    peminjamanSelect.addEventListener('change', function () {
+        const selected = this.options[this.selectedIndex];
+
+        if (this.value) {
+            namaPeminjam.value = selected.dataset.user;
+            namaBuku.value = selected.dataset.buku;
+            tanggalPinjam.value = selected.dataset.tanggal;
+            tenggatTempo.value = selected.dataset.tenggat;
+            statusBuku.value = selected.dataset.status;
+        } else {
+            namaPeminjam.value = '';
+            namaBuku.value = '';
+            tanggalPinjam.value = '';
+            tenggatTempo.value = '';
+            statusBuku.value = '';
+        }
+    });
+</script>
 @endsection

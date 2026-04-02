@@ -8,7 +8,11 @@ class Denda extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['pengembalian_id', 'kondisi_buku', 'status'];
+    protected $fillable = [
+        'pengembalian_id',
+        'kondisi_buku',
+        'status',
+    ];
 
     public function pengembalian()
     {

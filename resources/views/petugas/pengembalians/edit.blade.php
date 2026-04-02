@@ -1,85 +1,104 @@
 @extends('layouts.backend')
-
-@section('title', 'Petugas Perpus - Edit Pengembalian')
+@section('title','Edit Pengembalian')
 
 @section('content')
 <div class="container py-4">
     <div class="card shadow-sm">
-        {{-- Header --}}
-         <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4;">
+        <div class="card-header" style="background-color: #457de4;">
             <h3 class="mb-0 text-white">Edit Pengembalian</h3>
         </div>
 
-        {{-- Body --}}
         <div class="card-body">
-            {{-- Error Alert --}}
-            @if ($errors->any())
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <strong>Ups!</strong> Ada beberapa masalah dengan inputan kamu.
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
-
-            {{-- Form --}}
-            <form action="{{ route('petugas.pengembalians.update', $pengembalian->id) }}" method="POST" class="p-3 border rounded bg-light shadow-sm">
+            <form action="{{ route('petugas.pengembalians.update', $pengembalian->id) }}" method="POST">
                 @csrf
                 @method('PUT')
 
-                {{-- Pilih Peminjaman --}}
+                {{-- Kode Pengembalian --}}
                 <div class="mb-3">
-                    <label for="peminjaman_id" class="form-label fw-semibold">Peminjaman</label>
-                    <select name="peminjaman_id" id="peminjaman_id" 
-                            class="form-select @error('peminjaman_id') is-invalid @enderror" required>
-                        <option value="">-- Pilih Peminjam --</option>
-                        @foreach($peminjamans as $p)
-                            <option value="{{ $p->id }}" {{ old('peminjaman_id', $pengembalian->peminjaman_id) == $p->id ? 'selected' : '' }}>
-                                {{ $p->user->name ?? '-' }} - {{ $p->buku->judul ?? '-' }}
-                                (Pinjam: {{ $p->tanggal_pinjam }}, Tempo: {{ $p->tenggat_tempo }})
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('peminjaman_id')
+                    <label for="kode_pengembalian">Kode Pengembalian</label>
+                    <input type="text" name="kode_pengembalian"
+                           class="form-control @error('kode_pengembalian') is-invalid @enderror"
+                           value="{{ old('kode_pengembalian',$pengembalian->kode_pengembalian) }}" required>
+                    @error('kode_pengembalian')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
+                </div>
+
+                {{-- Kode Peminjaman --}}
+                <div class="mb-3">
+                    <label for="kode_peminjaman">Kode Peminjaman</label>
+                    <input type="text" name="kode_peminjaman" id="kode_peminjaman"
+                           class="form-control @error('kode_peminjaman') is-invalid @enderror"
+                           value="{{ old('kode_peminjaman',$pengembalian->peminjaman->kode_peminjaman) }}" required>
+                    @error('kode_peminjaman')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                {{-- Preview --}}
+                <div id="preview-info" class="border p-3 mb-3 bg-light rounded" style="display:none;">
+                    <p><strong>Peminjam:</strong> <span id="preview-user"></span></p>
+                    <p><strong>Buku:</strong> <span id="preview-buku"></span></p>
+                    <p><strong>Tanggal Pinjam:</strong> <span id="preview-pinjam"></span></p>
+                    <p><strong>Tenggat:</strong> <span id="preview-tempo"></span></p>
+                    <p><strong>Status:</strong> <span id="preview-status"></span></p>
                 </div>
 
                 {{-- Tanggal Pengembalian --}}
                 <div class="mb-3">
-                    <label for="tanggal_pengembalian" class="form-label fw-semibold">Tanggal Pengembalian</label>
-                    <input type="date" name="tanggal_pengembalian" id="tanggal_pengembalian" 
-                           class="form-control @error('tanggal_pengembalian') is-invalid @enderror"
-                           value="{{ old('tanggal_pengembalian', $pengembalian->tanggal_pengembalian) }}" required>
-                    @error('tanggal_pengembalian')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                    <label for="tanggal_pengembalian">Tanggal Pengembalian</label>
+                    <input type="date" name="tanggal_pengembalian"
+                           class="form-control"
+                           value="{{ old('tanggal_pengembalian',$pengembalian->tanggal_pengembalian) }}" required>
                 </div>
 
-                {{-- Kondisi Buku --}}
+                {{-- Kondisi --}}
                 <div class="mb-3">
-                    <label for="kondisi" class="form-label fw-semibold">Kondisi Buku</label>
-                    <select name="kondisi" id="kondisi" 
-                            class="form-select @error('kondisi') is-invalid @enderror" required>
-                        <option value="baik" {{ old('kondisi', $pengembalian->kondisi) == 'baik' ? 'selected' : '' }}>Baik</option>
-                        <option value="rusak" {{ old('kondisi', $pengembalian->kondisi) == 'rusak' ? 'selected' : '' }}>Rusak</option>
-                        <option value="hilang" {{ old('kondisi', $pengembalian->kondisi) == 'hilang' ? 'selected' : '' }}>Hilang</option>
+                    <label for="kondisi">Kondisi Buku</label>
+                    <select name="kondisi" class="form-select" required>
+                        <option value="baik" {{ $pengembalian->kondisi=='baik' ? 'selected':'' }}>Baik</option>
+                        <option value="rusak" {{ $pengembalian->kondisi=='rusak' ? 'selected':'' }}>Rusak</option>
+                        <option value="hilang" {{ $pengembalian->kondisi=='hilang' ? 'selected':'' }}>Hilang</option>
                     </select>
-                    @error('kondisi')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
                 </div>
 
-                {{-- Tombol --}}
-                <div class="mt-4 d-flex justify-content-end gap-2">
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary">Update</button>
                     <a href="{{ route('petugas.pengembalians.index') }}" class="btn btn-secondary">Batal</a>
-                    <button type="submit" class="btn btn-primary">Update</button>
                 </div>
+
             </form>
         </div>
     </div>
 </div>
+
+{{-- AJAX Preview --}}
+<script>
+function loadPreview(){
+    const kode = document.getElementById('kode_peminjaman').value.trim();
+
+    if(kode.length > 0){
+        fetch('{{ route("petugas.ajax-peminjaman") }}?kode=' + kode)
+            .then(res => res.json())
+            .then(data => {
+                if(data.success){
+                    document.getElementById('preview-info').style.display='block';
+                    document.getElementById('preview-user').textContent=data.peminjaman.user.name;
+                    document.getElementById('preview-buku').textContent=data.peminjaman.buku.judul;
+                    document.getElementById('preview-pinjam').textContent=data.peminjaman.tanggal_pinjam;
+                    document.getElementById('preview-tempo').textContent=data.peminjaman.tenggat_tempo;
+                    document.getElementById('preview-status').textContent=data.peminjaman.status;
+                } else {
+                    document.getElementById('preview-info').style.display='none';
+                }
+            });
+    } else {
+        document.getElementById('preview-info').style.display='none';
+    }
+}
+
+document.getElementById('kode_peminjaman').addEventListener('input', loadPreview);
+window.addEventListener('DOMContentLoaded', loadPreview);
+</script>
+
 @endsection

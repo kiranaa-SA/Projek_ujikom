@@ -1,6 +1,6 @@
 @extends('layouts.backend')
 
-@section('title', 'Detail Buku')
+@section('title', 'Petugas Perpus - Detail Buku')
 
 @section('content')
 <div class="container py-4">
@@ -8,8 +8,10 @@
         <div class="card-header bg-primary text-white">
             <h3 class="mb-0">Detail Buku</h3>
         </div>
+
         <div class="card-body">
             <div class="row">
+
                 <!-- Kolom Info Buku -->
                 <div class="col-md-8">
                     <table class="table table-borderless">
@@ -55,18 +57,25 @@
                 <!-- Kolom Gambar Buku -->
                 <div class="col-md-4 text-center">
                     @if($buku->gambar)
-                        <img src="{{ asset('storage/' . $buku->gambar) }}" alt="Gambar Buku" class="img-fluid rounded shadow-sm mb-3">
+                        <img src="{{ asset('storage/' . $buku->gambar) }}" 
+                             alt="Gambar Buku" 
+                             class="img-fluid rounded shadow-sm mb-3">
                     @else
                         <div class="border rounded p-5 text-muted">
                             Tidak ada gambar
                         </div>
                     @endif
                 </div>
+
             </div>
 
             <div class="mt-4">
-                <a href="{{ route('petugas.bukus.index') }}" class="btn btn-secondary">Kembali</a>
+                <a href="{{ route('petugas.bukus.index') }}" 
+                   class="btn btn-secondary">
+                   Kembali
+                </a>
             </div>
+
         </div>
     </div>
 </div>

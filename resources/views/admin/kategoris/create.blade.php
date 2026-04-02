@@ -5,55 +5,53 @@
 @section('content')
 <div class="container py-4">
     <div class="card shadow-sm">
-        {{-- Card header --}}
-        <div class="card-header" style="background-color: #457de4;">
-            <h3 class="mb-0 text-white">Tambah Kategori</h3>
+
+        {{-- Header --}}
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Tambah Kategori</h3>
         </div>
 
-        {{-- Card body --}}
+        {{-- Body --}}
         <div class="card-body">
-            {{-- Error Alert --}}
-            @if ($errors->any())
-                <div class="alert alert-danger alert-dismissible fade show">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
-
-            {{-- Form --}}
-            <form action="{{ route('admin.kategoris.store') }}" method="POST" class="p-3 border rounded bg-light shadow-sm">
+            <form action="{{ route('admin.kategoris.store') }}" method="POST">
                 @csrf
 
+                {{-- Nama Kategori --}}
                 <div class="mb-3">
-                    <label for="nama_kategori" class="form-label fw-semibold">Nama Kategori</label>
-                    <input type="text" name="nama_kategori" id="nama_kategori"
-                           class="form-control @error('nama_kategori') is-invalid @enderror"
-                           value="{{ old('nama_kategori') }}" placeholder="Masukkan nama kategori" required>
+                    <label for="nama_kategori" class="form-label">Nama Kategori</label>
+                    <input type="text"
+                        name="nama_kategori"
+                        id="nama_kategori"
+                        class="form-control @error('nama_kategori') is-invalid @enderror"
+                        value="{{ old('nama_kategori') }}"
+                        required>
                     @error('nama_kategori')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
+                {{-- Deskripsi --}}
                 <div class="mb-3">
-                    <label for="deskripsi" class="form-label fw-semibold">Deskripsi</label>
-                    <textarea name="deskripsi" id="deskripsi" rows="3"
-                              class="form-control @error('deskripsi') is-invalid @enderror"
-                              placeholder="Masukkan deskripsi kategori">{{ old('deskripsi') }}</textarea>
+                    <label for="deskripsi" class="form-label">Deskripsi</label>
+                    <textarea
+                        name="deskripsi"
+                        id="deskripsi"
+                        rows="3"
+                        class="form-control @error('deskripsi') is-invalid @enderror"
+                        placeholder="(Opsional)">{{ old('deskripsi') }}</textarea>
                     @error('deskripsi')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
-                <div class="mt-4">
-                    <button type="submit" class="btn btn-primary me-2">Simpan</button>
-                    <a href="{{ route('admin.kategoris.index') }}" class="btn btn-secondary">Kembali</a>
-                </div>
+                {{-- Tombol --}}
+                <button class="btn btn-primary">Simpan</button>
+                <a href="{{ route('admin.kategoris.index') }}" class="btn btn-secondary">
+                    Batal
+                </a>
             </form>
         </div>
+
     </div>
 </div>
 @endsection

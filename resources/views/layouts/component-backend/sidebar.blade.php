@@ -22,26 +22,17 @@
         </li>
 
         {{-- DASHBOARD --}}
-        @if(Auth::user()->role == 'admin')
-          <li class="sidebar-item">
-            <a class="sidebar-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" 
-               href="{{ route('admin.dashboard') }}">
-              <span><i class="ti ti-layout-dashboard"></i></span>
-              <span class="hide-menu">Dashboard</span>
-            </a>
-          </li>
-        @elseif(Auth::user()->role == 'petugas')
-          <li class="sidebar-item">
-            <a class="sidebar-link {{ request()->routeIs('petugas.dashboard') ? 'active' : '' }}" 
-               href="{{ route('petugas.dashboard') }}">
-              <span><i class="ti ti-layout-dashboard"></i></span>
-              <span class="hide-menu">Dashboard</span>
-            </a>
-          </li>
-        @endif
+        <li class="sidebar-item">
+          <a class="sidebar-link {{ request()->routeIs(Auth::user()->role . '.dashboard') ? 'active' : '' }}" 
+             href="{{ route(Auth::user()->role . '.dashboard') }}">
+            <span><i class="ti ti-layout-dashboard"></i></span>
+            <span class="hide-menu">Dashboard</span>
+          </a>
+        </li>
 
-        {{-- MENU ADMIN --}}
+        {{-- MENU KHUSUS ADMIN --}}
         @if(Auth::user()->role == 'admin')
+
           <li class="sidebar-item">
             <a class="sidebar-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" 
                href="{{ route('admin.users.index') }}">
@@ -65,10 +56,12 @@
               <span class="hide-menu">Rak</span>
             </a>
           </li>
+
         @endif
 
         {{-- MENU ADMIN & PETUGAS --}}
-        @if(in_array(Auth::user()->role, ['admin', 'petugas']))
+        @if(in_array(Auth::user()->role, ['admin','petugas']))
+
           <li class="sidebar-item">
             <a class="sidebar-link {{ request()->routeIs(Auth::user()->role . '.bukus.*') ? 'active' : '' }}" 
                href="{{ route(Auth::user()->role . '.bukus.index') }}">
@@ -100,20 +93,19 @@
               <span class="hide-menu">Denda</span>
             </a>
           </li>
-        @endif
 
-        {{-- LAPORAN ADMIN --}}
-        @if(Auth::user()->role == 'admin')
+          {{-- LAPORAN --}}
           <li class="sidebar-item">
-            <a class="sidebar-link {{ request()->routeIs('admin.laporans.*') ? 'active' : '' }}" 
-               href="{{ route('admin.laporans.index') }}">
+            <a class="sidebar-link {{ request()->routeIs(Auth::user()->role . '.laporans.*') ? 'active' : '' }}" 
+               href="{{ route(Auth::user()->role . '.laporans.index') }}">
               <span><i class="ti ti-report"></i></span>
               <span class="hide-menu">Laporan</span>
             </a>
           </li>
+
         @endif
 
-        {{-- HERO BANNER --}}
+        {{-- HERO BANNER (ADMIN ONLY) --}}
         @if(Auth::user()->role == 'admin')
           <li class="sidebar-item">
             <a class="sidebar-link {{ request()->routeIs('admin.hero-banners.*') ? 'active' : '' }}" 
@@ -124,16 +116,18 @@
           </li>
         @endif
 
-        {{-- MENU LAINNYA → USER FRONTEND --}}
-          <li class="nav-small-cap mt-3">
+        {{-- MENU LAINNYA --}}
+        <li class="nav-small-cap mt-3">
           <span class="hide-menu text-uppercase fw-bold text-muted">Menu Lainnya</span>
         </li>
+
         <li class="sidebar-item">
           <a class="sidebar-link" href="{{ url('/') }}">
             <i class="ti ti-user"></i>
             <span class="hide-menu">User</span>
           </a>
         </li>
+
       </ul>
     </nav>
   </div>

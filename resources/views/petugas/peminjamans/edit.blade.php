@@ -26,9 +26,20 @@
             @endif
 
             {{-- Form --}}
-            <form action="{{ route('petugas.peminjamans.update', $peminjaman->id) }}" method="POST" class="p-3 border rounded bg-light shadow-sm">
+            <form action="{{ route('petugas.peminjamans.update', $peminjaman->id) }}" 
+                  method="POST" 
+                  class="p-3 border rounded bg-light shadow-sm">
                 @csrf
                 @method('PUT')
+
+                {{-- ✅ KODE PEMINJAMAN (READONLY) --}}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Kode Peminjaman</label>
+                    <input type="text"
+                           class="form-control"
+                           value="{{ $peminjaman->kode_peminjaman }}"
+                           readonly>
+                </div>
 
                 <div class="mb-3">
                     <label for="user_id" class="form-label fw-semibold">User</label>
@@ -36,7 +47,8 @@
                             class="form-select @error('user_id') is-invalid @enderror" required>
                         <option value="">-- Pilih User --</option>
                         @foreach($users as $user)
-                            <option value="{{ $user->id }}" {{ (old('user_id', $peminjaman->user_id) == $user->id) ? 'selected' : '' }}>
+                            <option value="{{ $user->id }}" 
+                                {{ (old('user_id', $peminjaman->user_id) == $user->id) ? 'selected' : '' }}>
                                 {{ $user->name }}
                             </option>
                         @endforeach
@@ -52,7 +64,8 @@
                             class="form-select @error('buku_id') is-invalid @enderror" required>
                         <option value="">-- Pilih Buku --</option>
                         @foreach($bukus as $buku)
-                            <option value="{{ $buku->id }}" {{ (old('buku_id', $peminjaman->buku_id) == $buku->id) ? 'selected' : '' }}>
+                            <option value="{{ $buku->id }}" 
+                                {{ (old('buku_id', $peminjaman->buku_id) == $buku->id) ? 'selected' : '' }}>
                                 {{ $buku->judul }}
                             </option>
                         @endforeach
@@ -64,9 +77,12 @@
 
                 <div class="mb-3">
                     <label for="tanggal_pinjam" class="form-label fw-semibold">Tanggal Pinjam</label>
-                    <input type="date" name="tanggal_pinjam" id="tanggal_pinjam" 
+                    <input type="date" 
+                           name="tanggal_pinjam" 
+                           id="tanggal_pinjam" 
                            class="form-control @error('tanggal_pinjam') is-invalid @enderror"
-                           value="{{ old('tanggal_pinjam', $peminjaman->tanggal_pinjam) }}" required>
+                           value="{{ old('tanggal_pinjam', $peminjaman->tanggal_pinjam) }}" 
+                           required>
                     @error('tanggal_pinjam')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -74,7 +90,9 @@
 
                 <div class="mb-3">
                     <label for="tanggal_kembali" class="form-label fw-semibold">Tanggal Kembali</label>
-                    <input type="date" name="tanggal_kembali" id="tanggal_kembali" 
+                    <input type="date" 
+                           name="tanggal_kembali" 
+                           id="tanggal_kembali" 
                            class="form-control @error('tanggal_kembali') is-invalid @enderror"
                            value="{{ old('tanggal_kembali', $peminjaman->tanggal_kembali) }}">
                     @error('tanggal_kembali')
@@ -86,8 +104,14 @@
                     <label for="status" class="form-label fw-semibold">Status</label>
                     <select name="status" id="status" 
                             class="form-select @error('status') is-invalid @enderror" required>
-                        <option value="dipinjam" {{ old('status', $peminjaman->status) == 'dipinjam' ? 'selected' : '' }}>Dipinjam</option>
-                        <option value="dikembalikan" {{ old('status', $peminjaman->status) == 'dikembalikan' ? 'selected' : '' }}>Dikembalikan</option>
+                        <option value="dipinjam" 
+                            {{ old('status', $peminjaman->status) == 'dipinjam' ? 'selected' : '' }}>
+                            Dipinjam
+                        </option>
+                        <option value="dikembalikan" 
+                            {{ old('status', $peminjaman->status) == 'dikembalikan' ? 'selected' : '' }}>
+                            Dikembalikan
+                        </option>
                     </select>
                     @error('status')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -96,8 +120,10 @@
 
                 <div class="mt-4">
                     <button type="submit" class="btn btn-primary me-2">Update</button>
-                    <a href="{{ route('petugas.peminjamans.index') }}" class="btn btn-secondary">Batal</a>
+                    <a href="{{ route('petugas.peminjamans.index') }}" 
+                       class="btn btn-secondary">Batal</a>
                 </div>
+
             </form>
         </div>
     </div>

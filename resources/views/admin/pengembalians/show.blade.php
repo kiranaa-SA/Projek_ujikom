@@ -5,51 +5,104 @@
 @section('content')
 <div class="container py-4">
     <div class="card shadow-sm">
-        {{-- Header --}}
-        <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #457de4;">
+
+        <div class="card-header d-flex justify-content-between align-items-center"
+             style="background-color: #457de4;">
             <h3 class="mb-0 text-white">Detail Pengembalian</h3>
-            <a href="{{ route('admin.pengembalians.index') }}" class="btn" style="background-color: #1d37df; color: white; border: none;">
-                Kembali
+            <a href="{{ route('admin.pengembalians.index') }}"
+               class="btn btn-sm"
+               style="background-color: #1d37df; color: white;">
+                <i class="bi bi-arrow-left-circle me-1"></i> Kembali
             </a>
         </div>
 
-        {{-- Body --}}
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered table-hover text-center mb-0">
-                    <thead style="background-color: #e3f2fd; color: #212529;">
+                    <thead style="background-color: #e3f2fd;">
                         <tr>
                             <th>No</th>
-                            <th>Peminjam</th>
+                            <th>Kode</th>
+                            <th>User</th>
                             <th>Buku</th>
                             <th>Tanggal Pinjam</th>
+                            <th>Tenggat</th>
                             <th>Tanggal Kembali</th>
-                            <th>Kondisi Buku</th>
+                            <th>Kondisi</th>
+                            <th>Terlambat</th>
                             <th>Denda</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>1</td>
+
+                            <td class="fw-semibold text-primary">
+                                {{ $pengembalian->kode_pengembalian ?? '-' }}
+                            </td>
+
                             <td>{{ $pengembalian->peminjaman->user->name ?? '-' }}</td>
                             <td>{{ $pengembalian->peminjaman->buku->judul ?? '-' }}</td>
-                            <td>{{ $pengembalian->peminjaman->tanggal_pinjam ?? '-' }}</td>
-                            <td>{{ $pengembalian->tanggal_pengembalian ?? '-' }}</td>
+
                             <td>
-                                @if($pengembalian->kondisi == 'baik')
-                                    <span class="badge bg-success">Baik</span>
-                                @elseif($pengembalian->kondisi == 'rusak')
-                                    <span class="badge bg-warning text-dark">Rusak</span>
-                                @else
-                                    <span class="badge bg-danger">Hilang</span>
-                                @endif
+                                {{ $pengembalian->peminjaman->tanggal_pinjam
+                                    ? \Carbon\Carbon::parse($pengembalian->peminjaman->tanggal_pinjam)->format('d M Y')
+                                    : '-' }}
                             </td>
-                            <td>Rp {{ number_format($pengembalian->denda, 0, ',', '.') }}</td>
+
+                            <td>
+                                {{ $pengembalian->peminjaman->tenggat_tempo
+                                    ? \Carbon\Carbon::parse($pengembalian->peminjaman->tenggat_tempo)->format('d M Y')
+                                    : '-' }}
+                            </td>
+
+                            <td>
+                                {{ $pengembalian->tanggal_pengembalian
+                                    ? \Carbon\Carbon::parse($pengembalian->tanggal_pengembalian)->format('d M Y')
+                                    : '-' }}
+                            </td>
+
+                            <td>
+                                @switch($pengembalian->kondisi)
+                                    @case('baik')
+                                        <span class="badge bg-primary">Baik</span>
+                                        @break
+                                    @case('rusak')
+                                        <span class="badge bg-danger">Rusak</span>
+                                        @break
+                                    @case('hilang')
+                                        <span class="badge bg-dark">Hilang</span>
+                                        @break
+                                    @default
+                                        <span class="badge bg-secondary">-</span>
+                                @endswitch
+                            </td>
+
+                            {{-- 🔥 Terlambat Aman --}}
+                            <td>
+                                @php
+                                    $terlambat = max($pengembalian->terlambat ?? 0, 0);
+                                @endphp
+                                {{ $terlambat }} Hari
+                            </td>
+
+                            {{-- 🔥 Denda Aman --}}
+                            <td>
+                                @php
+                                    $denda = max($pengembalian->denda ?? 0, 0);
+                                @endphp
+
+                                <span class="fw-semibold {{ $denda > 0 ? 'text-danger' : 'text-success' }}">
+                                    Rp {{ number_format($denda, 0, ',', '.') }}
+                                </span>
+                            </td>
+
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
+
     </div>
 </div>
 @endsection

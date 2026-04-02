@@ -384,7 +384,7 @@
     <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">
       <div class="team-member">
         <div class="member-img">
-          <img src="{{('frontend/assets/img/tips/buku-minat.jpg')}}" class="img-fluid" alt="Tips Memilih Buku">
+          <img src="{{('frontend/download (2).jpg')}}" class="img-fluid" alt="Tips Memilih Buku">
         </div>
         <div class="member-info">
           <h4>Tips Memilih Buku Sesuai Minat</h4>
@@ -396,7 +396,7 @@
     <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="200">
       <div class="team-member">
         <div class="member-img">
-          <img src="{{('frontend/assets/img/tips/cara-membaca-cepat.jpg')}}" class="img-fluid" alt="Cara Membaca Cepat">
+          <img src="{{('frontend/𝓟𝓲𝓷 _𝓟𝓸𝓸𝓳𝓪_.🦋')}}" class="img-fluid" alt="Cara Membaca Cepat">
         </div>
         <div class="member-info">
           <h4>Cara Membaca Cepat Efektif</h4>
@@ -408,7 +408,7 @@
     <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="300">
       <div class="team-member">
         <div class="member-img">
-          <img src="{{('frontend/assets/img/tips/event-literasi.jpg')}}" class="img-fluid" alt="Event Literasi">
+          <img src="{{('frontend/download (8).jpg')}}" class="img-fluid" alt="Event Literasi">
         </div>
         <div class="member-info">
           <h4>Event Literasi di Perpustakaan</h4>
@@ -420,7 +420,7 @@
     <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="400">
       <div class="team-member">
         <div class="member-img">
-          <img src="{{('frontend/assets/img/tips/buku-populer.jpg')}}" class="img-fluid" alt="Buku Populer Minggu Ini">
+          <img src="{{('frontend/I love to read 📚.jpg')}}" class="img-fluid" alt="Buku Populer Minggu Ini">
         </div>
         <div class="member-info">
           <h4>Buku Populer Minggu Ini</h4>
