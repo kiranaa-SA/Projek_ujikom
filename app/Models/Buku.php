@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,10 +17,21 @@ class Buku extends Model
         'tahun_terbit',
         'stok',
         'gambar',
-        'deskripsi', // tambahan
+        'deskripsi',
         'rak_id',
         'kategori_id',
     ];
+
+    // 🔥 Tambahin ini biar otomatis ikut ke API
+    protected $appends = ['gambar_url'];
+
+    // 🔥 Bikin URL gambar full
+    public function getGambarUrlAttribute()
+    {
+        return $this->gambar 
+            ? asset('storage/' . $this->gambar)
+            : null;
+    }
 
     public function rak()
     {

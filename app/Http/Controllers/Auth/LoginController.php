@@ -1,47 +1,76 @@
 <?php
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    use AuthenticatesUsers;
-
-    /**
-     * Redirect user after login based on role.
-     *
-     * @return string
-     */
-    protected function redirectTo()
+    // 🔥 TAMPILKAN HALAMAN LOGIN (WEB)
+    public function showLoginForm()
     {
-        $role = auth()->user()->role;
+        return view('auth.login');
+    }
 
-        switch ($role) {
-            case 'admin':
-                return route('admin.dashboard'); // ✅ redirect ke dashboard admin
-            case 'petugas':
-                return route('petugas.dashboard'); // ✅ redirect ke dashboard petugas
-            default:
-                return route('home'); // ✅ user biasa diarahkan ke halaman frontend
+    // 🔥 LOGIN WEB (BLADE)
+    public function login(Request $request)
+    {
+        // kalau request dari API (Flutter)
+        if ($request->expectsJson()) {
+
+            $user = User::where('email', $request->email)->first();
+
+            if (!$user || !Hash::check($request->password, $user->password)) {
+                return response()->json([
+                    'message' => 'Email atau password salah'
+                ], 401);
+            }
+
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'message' => 'Login success',
+                'access_token' => $token,
+                'user' => $user
+            ]);
         }
+
+        // 🔥 LOGIN WEB
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+
+            // redirect sesuai role
+            if (Auth::user()->role == 'admin') {
+                return redirect()->route('admin.dashboard');
+            } elseif (Auth::user()->role == 'petugas') {
+                return redirect()->route('petugas.dashboard');
+            }
+
+            return redirect('/');
+        }
+
+        return back()->withErrors([
+            'email' => 'Email atau password salah',
+        ])->onlyInput('email');
     }
 
-    /**
-     * Setelah logout redirect ke halaman frontend home.
-     */
-    protected function loggedOut(Request $request)
+    // 🔥 LOGOUT WEB
+    public function logout(Request $request)
     {
-        return redirect()->route('home');
-    }
+        Auth::logout();
 
-    /**
-     * Constructor.
-     */
-    public function __construct()
-    {
-        // Guest middleware untuk yang belum login
-        $this->middleware('guest')->except('logout');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/login');
     }
 }

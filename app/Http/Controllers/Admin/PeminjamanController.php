@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -34,7 +35,7 @@ class PeminjamanController extends Controller
     }
 
     // =========================
-    // STORE (🔥 FIXED)
+    // STORE
     // =========================
     public function store(Request $request)
     {
@@ -50,13 +51,11 @@ class PeminjamanController extends Controller
             return back()->with('error', 'Stok buku habis.')->withInput();
         }
 
-        // 🔥 Generate kode otomatis
+        // kode otomatis
         $lastId = Peminjaman::max('id') ?? 0;
         $kode   = 'PMJ-' . str_pad($lastId + 1, 4, '0', STR_PAD_LEFT);
 
         $tanggalPinjam = Carbon::parse($request->tanggal_pinjam);
-
-        // 🔥 Tenggat otomatis 7 hari
         $tenggat = $tanggalPinjam->copy()->addDays(7);
 
         Peminjaman::create([
@@ -65,14 +64,58 @@ class PeminjamanController extends Controller
             'buku_id'         => $request->buku_id,
             'tanggal_pinjam'  => $tanggalPinjam,
             'tenggat_tempo'   => $tenggat,
-            'status'          => 'dipinjam',
+            'status'          => 'pending', // 🔥 default pending
         ]);
 
-        // Kurangi stok
+        return redirect()->route('admin.peminjamans.index')
+            ->with('success', 'Peminjaman berhasil ditambahkan (menunggu ACC).');
+    }
+
+    // =========================
+    // ACCEPT (ACC)
+    // =========================
+    public function accept($id)
+    {
+        $peminjaman = Peminjaman::findOrFail($id);
+        $buku = $peminjaman->buku;
+
+        if ($peminjaman->status !== 'pending') {
+            return back()->with('error', 'Peminjaman tidak bisa di-ACC.');
+        }
+
+        if ($buku->stok <= 0) {
+            return back()->with('error', 'Stok buku habis.');
+        }
+
+        // ubah status + kurangi stok
+        $peminjaman->update([
+            'status' => 'dipinjam'
+        ]);
+
         $buku->decrement('stok');
 
-        return redirect()->route('admin.peminjamans.index')
-            ->with('success', 'Peminjaman berhasil ditambahkan.');
+        return back()->with('success', 'Peminjaman berhasil di-ACC.');
+    }
+
+    // =========================
+    // RETURN (KEMBALIKAN)
+    // =========================
+    public function return($id)
+    {
+        $peminjaman = Peminjaman::findOrFail($id);
+        $buku = $peminjaman->buku;
+
+        if ($peminjaman->status !== 'dipinjam') {
+            return back()->with('error', 'Peminjaman tidak valid.');
+        }
+
+        $peminjaman->update([
+            'status' => 'dikembalikan'
+        ]);
+
+        $buku->increment('stok');
+
+        return back()->with('success', 'Buku berhasil dikembalikan.');
     }
 
     // =========================
@@ -108,18 +151,12 @@ class PeminjamanController extends Controller
             'buku_id'        => 'required|exists:bukus,id',
             'tanggal_pinjam' => 'required|date',
             'tenggat_tempo'  => 'required|date|after_or_equal:tanggal_pinjam',
-            'status'         => 'required|in:dipinjam,dikembalikan',
+            'status'         => 'required|in:pending,dipinjam,dikembalikan',
         ]);
 
         $peminjaman = Peminjaman::findOrFail($id);
 
-        $peminjaman->update([
-            'user_id'        => $request->user_id,
-            'buku_id'        => $request->buku_id,
-            'tanggal_pinjam' => $request->tanggal_pinjam,
-            'tenggat_tempo'  => $request->tenggat_tempo,
-            'status'         => $request->status,
-        ]);
+        $peminjaman->update($request->all());
 
         return redirect()->route('admin.peminjamans.index')
             ->with('success', 'Peminjaman berhasil diperbarui.');

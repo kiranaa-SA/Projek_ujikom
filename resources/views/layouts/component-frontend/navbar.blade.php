@@ -24,7 +24,6 @@
           </ul>
         </li>
 
-        {{-- GANTI JELAJAHI GENRE --}}
         <li><a href="{{ url('/') }}#team">Tips & Info</a></li>
 
         @auth
@@ -37,15 +36,30 @@
       <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
     </nav>
 
-    {{-- KANAN: Keranjang + Logout --}}
+    {{-- KANAN: FAVORIT + KERANJANG + LOGOUT --}}
     @auth
       @php
         $cartCount = \App\Models\Keranjang::where('user_id', auth()->id())->count();
+        $favoriteCount = \App\Models\Favorite::where('user_id', auth()->id())->count();
       @endphp
 
       <div class="d-flex align-items-center ms-4 gap-4">
 
-        {{-- ICON KERANJANG (FRONTEND) --}}
+        {{-- ❤️ FAVORIT --}}
+        <a href="{{ route('favorites.index') }}"
+           class="position-relative text-dark"
+           style="font-size: 22px;">
+          <i class="bi bi-heart"></i>
+
+          @if($favoriteCount > 0)
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                  style="font-size: 10px;">
+              {{ $favoriteCount }}
+            </span>
+          @endif
+        </a>
+
+        {{-- 🛒 KERANJANG --}}
         <a href="{{ route('keranjang.index') }}"
            class="position-relative text-dark"
            style="font-size: 22px;">

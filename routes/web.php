@@ -1,52 +1,46 @@
 <?php
 
-use App\Http\Controllers\Admin\BukuController as AdminBukuController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| FRONTEND CONTROLLERS
+| CONTROLLERS
 |--------------------------------------------------------------------------
 */
+
+// ADMIN
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\DendaController;
-
-/*
-|--------------------------------------------------------------------------
-| AUTH CONTROLLERS
-|--------------------------------------------------------------------------
-*/
-use App\Http\Controllers\Admin\HeroBannerController;
 use App\Http\Controllers\Admin\KategoriController;
-
-/*
-|--------------------------------------------------------------------------
-| ADMIN CONTROLLERS
-|--------------------------------------------------------------------------
-*/
-use App\Http\Controllers\Admin\LaporanController;
+use App\Http\Controllers\Admin\RakController;
+use App\Http\Controllers\Admin\BukuController as AdminBukuController;
 use App\Http\Controllers\Admin\PeminjamanController;
 use App\Http\Controllers\Admin\PengembalianController;
-use App\Http\Controllers\Admin\RakController;
+use App\Http\Controllers\Admin\DendaController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\FrontendController;
-use App\Http\Controllers\KeranjangController;
-use App\Http\Controllers\Petugas\BukuController as PetugasBukuController;
+use App\Http\Controllers\Admin\HeroBannerController;
+use App\Http\Controllers\Admin\LaporanController;
 
-/*
-|--------------------------------------------------------------------------
-| PETUGAS CONTROLLERS
-|--------------------------------------------------------------------------
-*/
+// PETUGAS
 use App\Http\Controllers\Petugas\DashboardController as PetugasDashboardController;
-use App\Http\Controllers\Petugas\DendaController as PetugasDendaController;
-use App\Http\Controllers\Petugas\LaporanController as PetugasLaporanController;
+use App\Http\Controllers\Petugas\BukuController as PetugasBukuController;
 use App\Http\Controllers\Petugas\PeminjamanController as PetugasPeminjamanController;
 use App\Http\Controllers\Petugas\PengembalianController as PetugasPengembalianController;
+use App\Http\Controllers\Petugas\DendaController as PetugasDendaController;
 use App\Http\Controllers\Petugas\UserController as PetugasUserController;
+use App\Http\Controllers\Petugas\LaporanController as PetugasLaporanController;
+
+// AUTH
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+
+// FRONTEND
+use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\KeranjangController;
+use App\Http\Controllers\FavoriteController;
+
+// MODEL
 use App\Models\PeminjamanNotification;
-use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -64,13 +58,13 @@ Route::get('/buku/{id}', [FrontendController::class, 'detail'])
     ->name('buku.detail');
 
 Route::post('/buku/{id}/pinjam', [FrontendController::class, 'pinjamBuku'])
-    ->whereNumber('id')
     ->middleware('auth')
     ->name('pinjam.buku');
 
 Route::get('/riwayat', [FrontendController::class, 'riwayatPeminjaman'])
     ->middleware('auth')
     ->name('riwayat.index');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -95,6 +89,24 @@ Route::middleware('auth')->group(function () {
         ->name('keranjang.pinjam');
 });
 
+
+/*
+|--------------------------------------------------------------------------
+| FAVORITE
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->group(function () {
+
+    Route::post('/favorite/{buku}', [FavoriteController::class, 'toggle'])
+        ->whereNumber('buku')
+        ->name('favorite.toggle');
+
+    Route::get('/favorites', [FavoriteController::class, 'index'])
+        ->name('favorites.index');
+});
+
+
 /*
 |--------------------------------------------------------------------------
 | AUTH
@@ -107,6 +119,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
+
 
 /*
 |--------------------------------------------------------------------------
@@ -133,29 +146,29 @@ Route::middleware(['auth', 'role:admin'])
             'hero-banners'  => HeroBannerController::class,
         ]);
 
-        Route::post('/peminjamans/{id}/accept',
-            [PeminjamanController::class, 'accept'])
+        // 🔥 CUSTOM ACTION
+        Route::post('/peminjamans/{id}/accept', [PeminjamanController::class, 'accept'])
             ->whereNumber('id')
             ->name('peminjamans.accept');
 
-        Route::post('/peminjamans/{id}/reject',
-            [PeminjamanController::class, 'reject'])
+        Route::post('/peminjamans/{id}/reject', [PeminjamanController::class, 'reject'])
             ->whereNumber('id')
             ->name('peminjamans.reject');
 
-        Route::get('/ajax-peminjaman',
-            [PeminjamanController::class, 'ajaxPeminjaman'])
+        Route::post('/peminjamans/{id}/return', [PeminjamanController::class, 'return'])
+            ->whereNumber('id')
+            ->name('peminjamans.return');
+
+        Route::get('/ajax-peminjaman', [PeminjamanController::class, 'ajaxPeminjaman'])
             ->name('ajax-peminjaman');
 
-        // LAPORAN ADMIN
-        Route::get('/laporans',
-            [LaporanController::class, 'index'])
+        Route::get('/laporans', [LaporanController::class, 'index'])
             ->name('laporans.index');
 
-        Route::get('/laporans/export-pdf',
-            [LaporanController::class, 'exportPdf'])
+        Route::get('/laporans/export-pdf', [LaporanController::class, 'exportPdf'])
             ->name('laporans.exportPdf');
     });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -179,29 +192,29 @@ Route::middleware(['auth', 'role:petugas'])
             'users'         => PetugasUserController::class,
         ]);
 
-        Route::post('/peminjamans/{id}/accept',
-            [PetugasPeminjamanController::class, 'accept'])
+        // 🔥 CUSTOM ACTION
+        Route::post('/peminjamans/{id}/accept', [PetugasPeminjamanController::class, 'accept'])
             ->whereNumber('id')
             ->name('peminjamans.accept');
 
-        Route::post('/peminjamans/{id}/reject',
-            [PetugasPeminjamanController::class, 'reject'])
+        Route::post('/peminjamans/{id}/reject', [PetugasPeminjamanController::class, 'reject'])
             ->whereNumber('id')
             ->name('peminjamans.reject');
 
-        Route::get('/ajax-peminjaman',
-            [PetugasPeminjamanController::class, 'ajaxPeminjaman'])
+        Route::post('/peminjamans/{id}/return', [PetugasPeminjamanController::class, 'return'])
+            ->whereNumber('id')
+            ->name('peminjamans.return');
+
+        Route::get('/ajax-peminjaman', [PetugasPeminjamanController::class, 'ajaxPeminjaman'])
             ->name('ajax-peminjaman');
 
-        // ✅ LAPORAN PETUGAS (DITAMBAHKAN)
-        Route::get('/laporans',
-            [PetugasLaporanController::class, 'index'])
+        Route::get('/laporans', [PetugasLaporanController::class, 'index'])
             ->name('laporans.index');
 
-        Route::get('/laporans/export-pdf',
-            [PetugasLaporanController::class, 'exportPdf'])
+        Route::get('/laporans/export-pdf', [PetugasLaporanController::class, 'exportPdf'])
             ->name('laporans.exportPdf');
     });
+
 
 /*
 |--------------------------------------------------------------------------

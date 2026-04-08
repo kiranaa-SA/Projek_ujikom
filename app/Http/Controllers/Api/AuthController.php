@@ -11,19 +11,20 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    // REGISTER
+    // ================= REGISTER =================
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name'     => 'required|string|max:255',
             'email'    => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string|min:8|confirmed', // harus pakai password_confirmation
         ]);
 
         if ($validator->fails()) {
             return response()->json([
+                'status'  => false,
                 'message' => 'Validation error',
-                'errors' => $validator->errors()
+                'errors'  => $validator->errors()
             ], 422);
         }
 
@@ -36,45 +37,60 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'message'      => 'Register success',
-            'data'         => $user,
+            'status'       => true,
+            'message'      => 'Register berhasil',
+            'user'         => $user,
             'access_token' => $token,
-            'token_type'   => 'Bearer',
-        ]);
+        ], 201);
     }
 
-    // LOGIN
+    // ================= LOGIN =================
     public function login(Request $request)
     {
         $request->validate([
             'email'    => 'required|email',
-            'password' => 'required',
+            'password' => 'required|string',
         ]);
 
         if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
+                'status'  => false,
                 'message' => 'Email atau password salah',
             ], 401);
         }
 
         $user = User::where('email', $request->email)->first();
 
+        // Hapus token lama
+        $user->tokens()->delete();
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'message'      => 'Login success',
+            'status'       => true,
+            'message'      => 'Login berhasil',
+            'user'         => $user,             // 🔥 supaya Flutter bisa simpan nama/email
             'access_token' => $token,
-            'token_type'   => 'Bearer',
         ]);
     }
 
-    // LOGOUT
+    // ================= LOGOUT =================
     public function logout(Request $request)
     {
-        $request->user()->tokens()->delete();
+        $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'message' => 'Logout success',
+            'status'  => true,
+            'message' => 'Logout berhasil',
+        ]);
+    }
+
+    // ================= GET USER =================
+    public function user(Request $request)
+    {
+        return response()->json([
+            'status' => true,
+            'user'   => $request->user(),
         ]);
     }
 }

@@ -38,6 +38,12 @@
         </div>
       @endif
 
+      @php
+        $isFavorite = \App\Models\Favorite::where('user_id', auth()->id())
+            ->where('buku_id', $buku->id)
+            ->exists();
+      @endphp
+
       <div class="card shadow-lg border-0 rounded-4 overflow-hidden mx-auto" style="max-width: 90%; background-color:#f9fbff;">
         <div class="row g-0">
 
@@ -94,6 +100,17 @@
                               style="width:48px; height:48px;"
                               title="Tambah ke Keranjang">
                         <i class="bi bi-cart-plus fs-5"></i>
+                      </button>
+                    </form>
+
+                    {{-- FAVORIT --}}
+                    <form action="{{ route('favorite.toggle', $buku->id) }}" method="POST">
+                      @csrf
+                      <button type="submit"
+                              class="btn {{ $isFavorite ? 'btn-danger' : 'btn-outline-danger' }} rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                              style="width:48px; height:48px;"
+                              title="Favorit">
+                        <i class="bi {{ $isFavorite ? 'bi-heart-fill' : 'bi-heart' }} fs-5"></i>
                       </button>
                     </form>
 
