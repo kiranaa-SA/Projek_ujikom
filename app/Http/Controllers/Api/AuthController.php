@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -15,7 +16,7 @@ class AuthController extends Controller
         $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6',
+            'password' => 'required|string|min:6|confirmed', // ✅ tambahin confirmed
         ]);
 
         $user = User::create([
@@ -25,37 +26,45 @@ class AuthController extends Controller
             'role'     => 'user',
         ]);
 
+        // ✅ langsung kasih token setelah register (biar Flutter enak)
+        $token = $user->createToken('api_token')->plainTextToken;
+
         return response()->json([
             'status'  => true,
             'message' => 'Register success',
-            'user'    => $user
+            'user'    => $user,
+            'token'   => $token
         ], 201);
     }
 
     // 🔹 LOGIN
     public function login(Request $request)
     {
-        $request->validate([
+        $credentials = $request->validate([
             'email'    => 'required|email',
             'password' => 'required|string',
         ]);
 
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        // ✅ pakai Auth::attempt (lebih aman)
+        if (!Auth::attempt($credentials)) {
             return response()->json([
                 'status'  => false,
                 'message' => 'Invalid credentials'
             ], 401);
         }
 
+        $user = Auth::user();
+
+        // ✅ hapus token lama (opsional biar ga numpuk)
+        $user->tokens()->delete();
+
         $token = $user->createToken('api_token')->plainTextToken;
 
         return response()->json([
-            'status' => true,
+            'status'  => true,
             'message' => 'Login success',
-            'user' => $user,
-            'token' => $token
+            'user'    => $user,
+            'token'   => $token
         ]);
     }
 
@@ -64,7 +73,7 @@ class AuthController extends Controller
     {
         return response()->json([
             'status' => true,
-            'user' => $request->user()
+            'user'   => $request->user()
         ]);
     }
 
@@ -74,7 +83,7 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'status' => true,
+            'status'  => true,
             'message' => 'Logged out successfully'
         ]);
     }

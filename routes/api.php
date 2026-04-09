@@ -19,11 +19,10 @@ Route::post('/login', [AuthController::class, 'login']);
 
 /*
 |--------------------------------------------------------------------------
-| PUBLIC (TANPA LOGIN)
+| PUBLIC
 |--------------------------------------------------------------------------
 */
 
-// 🔹 GET SEMUA BUKU
 Route::get('/buku', function () {
     $buku = Buku::all()->map(function ($item) {
         return [
@@ -46,19 +45,15 @@ Route::get('/buku', function () {
 
 /*
 |--------------------------------------------------------------------------
-| PROTECTED (LOGIN WAJIB)
+| PROTECTED
 |--------------------------------------------------------------------------
 */
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    // 🔹 USER
     Route::get('/user', [AuthController::class, 'user']);
-
-    // 🔹 LOGOUT
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    // 🔹 DASHBOARD
     Route::get('/dashboard', function () {
         return response()->json([
             'success' => true,
@@ -71,20 +66,11 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | FAVORITE
-    |--------------------------------------------------------------------------
-    */
-
-    // 🔹 GET FAVORITES
     Route::get('/favorites', [FavoriteController::class, 'index']);
 
-    // 🔹 TOGGLE FAVORITE
     Route::post('/favorite/{buku}', [FavoriteController::class, 'toggle'])
         ->whereNumber('buku');
 
-    // 🔹 CHECK FAVORITE
     Route::get('/favorite/{buku}/check', [FavoriteController::class, 'check'])
         ->whereNumber('buku');
 });
