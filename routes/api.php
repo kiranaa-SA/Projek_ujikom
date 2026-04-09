@@ -17,14 +17,13 @@ use App\Models\Pengembalian;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-
 /*
 |--------------------------------------------------------------------------
 | PUBLIC (TANPA LOGIN)
 |--------------------------------------------------------------------------
 */
 
-// 🔥 GET SEMUA BUKU
+// 🔹 GET SEMUA BUKU
 Route::get('/buku', function () {
     $buku = Buku::all()->map(function ($item) {
         return [
@@ -44,7 +43,6 @@ Route::get('/buku', function () {
         'data' => $buku
     ]);
 });
-
 
 /*
 |--------------------------------------------------------------------------
@@ -75,7 +73,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | FAVORITE (🔥 TAMBAHAN)
+    | FAVORITE
     |--------------------------------------------------------------------------
     */
 
