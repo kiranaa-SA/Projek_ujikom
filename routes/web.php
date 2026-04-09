@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\KeranjangController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Models\PeminjamanNotification;
 
 /*
@@ -73,7 +74,7 @@ Route::middleware('auth')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| AUTH (Login/Register)
+| AUTH (WEB)
 |--------------------------------------------------------------------------
 */
 
@@ -82,9 +83,23 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// Register
+// Register (WEB tetap ada, kalau kamu butuh)
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN (INI YANG TADI HILANG 🔥)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/', [DashboardController::class, 'index'])
+            ->name('dashboard');
+});
 
 /*
 |--------------------------------------------------------------------------
