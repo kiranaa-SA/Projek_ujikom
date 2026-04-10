@@ -74,8 +74,7 @@ Route::get('/riwayat', [FrontendController::class, 'riwayatPeminjaman'])
 
 Route::middleware('auth')->group(function () {
 
-    Route::get('/keranjang', [KeranjangController::class, 'index'])
-        ->name('keranjang.index');
+    Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
 
     Route::post('/keranjang/{buku}', [KeranjangController::class, 'store'])
         ->whereNumber('buku')
@@ -132,8 +131,7 @@ Route::middleware(['auth', 'role:admin'])
     ->name('admin.')
     ->group(function () {
 
-        Route::get('/', [DashboardController::class, 'index'])
-            ->name('dashboard');
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
         Route::resources([
             'kategoris'     => KategoriController::class,
@@ -158,6 +156,11 @@ Route::middleware(['auth', 'role:admin'])
         Route::post('/peminjamans/{id}/return', [PeminjamanController::class, 'return'])
             ->whereNumber('id')
             ->name('peminjamans.return');
+
+        // 🔥 PERPANJANG (FITUR BARU)
+        Route::post('/peminjamans/{id}/perpanjang', [PeminjamanController::class, 'perpanjang'])
+            ->whereNumber('id')
+            ->name('peminjamans.perpanjang');
 
         Route::get('/ajax-peminjaman', [PeminjamanController::class, 'ajaxPeminjaman'])
             ->name('ajax-peminjaman');
@@ -192,18 +195,18 @@ Route::middleware(['auth', 'role:petugas'])
             'users'         => PetugasUserController::class,
         ]);
 
-        // 🔥 CUSTOM ACTION
         Route::post('/peminjamans/{id}/accept', [PetugasPeminjamanController::class, 'accept'])
-            ->whereNumber('id')
             ->name('peminjamans.accept');
 
         Route::post('/peminjamans/{id}/reject', [PetugasPeminjamanController::class, 'reject'])
-            ->whereNumber('id')
             ->name('peminjamans.reject');
 
         Route::post('/peminjamans/{id}/return', [PetugasPeminjamanController::class, 'return'])
-            ->whereNumber('id')
             ->name('peminjamans.return');
+
+        // 🔥 PERPANJANG JUGA DI PETUGAS (OPSIONAL TAPI BAGUS)
+        Route::post('/peminjamans/{id}/perpanjang', [PetugasPeminjamanController::class, 'perpanjang'])
+            ->name('peminjamans.perpanjang');
 
         Route::get('/ajax-peminjaman', [PetugasPeminjamanController::class, 'ajaxPeminjaman'])
             ->name('ajax-peminjaman');
@@ -225,4 +228,4 @@ Route::middleware(['auth', 'role:petugas'])
 Route::post('/notifications/{id}/read', function ($id) {
     PeminjamanNotification::where('id', $id)->update(['is_read' => true]);
     return response()->noContent();
-})->middleware('auth')->name('notifications.read'); 
+})->middleware('auth')->name('notifications.read');

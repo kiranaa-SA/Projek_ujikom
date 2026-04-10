@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,22 +13,23 @@ class Peminjaman extends Model
     protected $table = 'peminjamans';
 
     protected $fillable = [
-        'kode_peminjaman', // ✅ TAMBAH
+        'kode_peminjaman',
         'user_id',
         'buku_id',
         'tanggal_pinjam',
         'tenggat_tempo',
         'status',
+        'jumlah_perpanjang', // ✅ TAMBAH
     ];
 
     // default value
     protected $attributes = [
         'status' => 'pending',
+        'jumlah_perpanjang' => 0, // ✅ TAMBAH
     ];
 
     /**
      * 🔹 Auto generate kode peminjaman
-     * contoh: PMJ-20260202-AB12
      */
     protected static function boot()
     {
@@ -36,9 +38,9 @@ class Peminjaman extends Model
         static::creating(function ($model) {
             if (empty($model->kode_peminjaman)) {
                 $model->kode_peminjaman =
-                'PMJ-' .
-                now()->format('Ymd') . '-' .
-                strtoupper(Str::random(4));
+                    'PMJ-' .
+                    now()->format('Ymd') . '-' .
+                    strtoupper(Str::random(4));
             }
         });
     }

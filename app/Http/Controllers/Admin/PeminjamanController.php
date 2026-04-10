@@ -51,7 +51,6 @@ class PeminjamanController extends Controller
             return back()->with('error', 'Stok buku habis.')->withInput();
         }
 
-        // kode otomatis
         $lastId = Peminjaman::max('id') ?? 0;
         $kode   = 'PMJ-' . str_pad($lastId + 1, 4, '0', STR_PAD_LEFT);
 
@@ -64,7 +63,8 @@ class PeminjamanController extends Controller
             'buku_id'         => $request->buku_id,
             'tanggal_pinjam'  => $tanggalPinjam,
             'tenggat_tempo'   => $tenggat,
-            'status'          => 'pending', // 🔥 default pending
+            'status'          => 'pending',
+            'jumlah_perpanjang' => 0, // ✅ TAMBAH
         ]);
 
         return redirect()->route('admin.peminjamans.index')
@@ -72,7 +72,7 @@ class PeminjamanController extends Controller
     }
 
     // =========================
-    // ACCEPT (ACC)
+    // ACCEPT
     // =========================
     public function accept($id)
     {
@@ -87,7 +87,6 @@ class PeminjamanController extends Controller
             return back()->with('error', 'Stok buku habis.');
         }
 
-        // ubah status + kurangi stok
         $peminjaman->update([
             'status' => 'dipinjam'
         ]);
@@ -98,7 +97,7 @@ class PeminjamanController extends Controller
     }
 
     // =========================
-    // RETURN (KEMBALIKAN)
+    // RETURN
     // =========================
     public function return($id)
     {
@@ -116,6 +115,33 @@ class PeminjamanController extends Controller
         $buku->increment('stok');
 
         return back()->with('success', 'Buku berhasil dikembalikan.');
+    }
+
+    // =========================
+    // 🔥 PERPANJANG (FITUR BARU)
+    // =========================
+    public function perpanjang($id)
+    {
+        $peminjaman = Peminjaman::findOrFail($id);
+
+        if ($peminjaman->status !== 'dipinjam') {
+            return back()->with('error', 'Peminjaman tidak bisa diperpanjang.');
+        }
+
+        if ($peminjaman->jumlah_perpanjang >= 2) {
+            return back()->with('error', 'Batas maksimal perpanjangan sudah tercapai.');
+        }
+
+        if (Carbon::now()->gt($peminjaman->tenggat_tempo)) {
+            return back()->with('error', 'Tidak bisa perpanjang karena sudah melewati tenggat.');
+        }
+
+        $peminjaman->tenggat_tempo = Carbon::parse($peminjaman->tenggat_tempo)->addDays(7);
+        $peminjaman->jumlah_perpanjang += 1;
+
+        $peminjaman->save();
+
+        return back()->with('success', 'Masa peminjaman berhasil diperpanjang 7 hari.');
     }
 
     // =========================
