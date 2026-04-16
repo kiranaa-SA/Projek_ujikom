@@ -14,7 +14,7 @@
         </div>
 
         <div class="card-body">
-            <table class="table table-bordered text-center">
+            <table class="table table-bordered">
                 <tr>
                     <th>Kode</th>
                     <td>{{ $peminjaman->kode_peminjaman }}</td>
@@ -37,10 +37,16 @@
                 </tr>
                 <tr>
                     <th>Status</th>
-                    <td>{{ $peminjaman->status }}</td>
+                    <td>
+                        @if($peminjaman->status == 'pending')
+                            <span class="badge bg-warning text-dark">Pending</span>
+                        @elseif($peminjaman->status == 'dipinjam')
+                            <span class="badge bg-success">Dipinjam</span>
+                        @elseif($peminjaman->status == 'dikembalikan')
+                            <span class="badge bg-primary">Dikembalikan</span>
+                        @endif
+                    </td>
                 </tr>
-
-                {{-- 🔥 TAMBAHAN --}}
                 <tr>
                     <th>Jumlah Perpanjang</th>
                     <td>

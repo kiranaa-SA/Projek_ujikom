@@ -6,7 +6,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // kosongin biar tidak nambah kolom lagi
+        // kosongin biar nggak nambah kolom lagi
     }
 
     public function down(): void

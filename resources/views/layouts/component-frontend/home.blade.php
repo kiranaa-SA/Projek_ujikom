@@ -17,7 +17,7 @@
             </div>
 
             <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="zoom-out">
-              <img src="{{ asset('frontend/assets/img/ChatGPT Image Oct 10, 2025, 09_30_05 AM.png') }}"
+              <img src="{{ asset('assets/images/logos/Девушка читает книгу Девушка делает домашнее задание Снова в школу _ Премиум вектор.jpg') }}"
                    class="img-fluid animated" alt="">
             </div>
           </div>

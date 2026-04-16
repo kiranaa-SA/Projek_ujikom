@@ -3,7 +3,7 @@
 
     {{-- Logo --}}
     <a href="{{ url('/') }}" class="logo d-flex align-items-center me-auto">
-      <h1 class="sitename">E-Perpus</h1>
+      <h1 class="sitename">LibraFast</h1>
     </a>
 
     {{-- Menu Navbar --}}

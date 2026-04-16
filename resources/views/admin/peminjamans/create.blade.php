@@ -41,9 +41,13 @@
 
                 <div class="mb-3">
                     <label class="form-label">Tanggal Pinjam</label>
-                    <input type="date" name="tanggal_pinjam" class="form-control"
+                    <input type="date" name="tanggal_pinjam"
+                        class="form-control"
                         value="{{ date('Y-m-d') }}" required>
                 </div>
+
+                {{-- 🔥 DEFAULT --}}
+                <input type="hidden" name="status" value="pending">
 
                 <button class="btn btn-primary">Simpan</button>
                 <a href="{{ route('admin.peminjamans.index') }}" class="btn btn-secondary">Batal</a>

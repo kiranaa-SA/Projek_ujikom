@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,16 +12,15 @@ class PeminjamanNotification extends Model
     protected $fillable = [
         'user_id',
         'peminjaman_id',
+        'type', // 🔥 TAMBAHAN
         'is_read',
     ];
 
-    // Relasi ke peminjaman
     public function peminjaman()
     {
         return $this->belongsTo(Peminjaman::class);
     }
 
-    // Relasi ke user penerima notifikasi (admin/petugas)
     public function user()
     {
         return $this->belongsTo(User::class);

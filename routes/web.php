@@ -65,6 +65,11 @@ Route::get('/riwayat', [FrontendController::class, 'riwayatPeminjaman'])
     ->middleware('auth')
     ->name('riwayat.index');
 
+// REQUEST PERPANJANG (USER)
+Route::post('/peminjaman/{id}/request-perpanjang', [FrontendController::class, 'requestPerpanjang'])
+    ->middleware('auth')
+    ->name('peminjaman.requestPerpanjang');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -144,23 +149,22 @@ Route::middleware(['auth', 'role:admin'])
             'hero-banners'  => HeroBannerController::class,
         ]);
 
-        // 🔥 CUSTOM ACTION
         Route::post('/peminjamans/{id}/accept', [PeminjamanController::class, 'accept'])
-            ->whereNumber('id')
             ->name('peminjamans.accept');
 
         Route::post('/peminjamans/{id}/reject', [PeminjamanController::class, 'reject'])
-            ->whereNumber('id')
             ->name('peminjamans.reject');
 
         Route::post('/peminjamans/{id}/return', [PeminjamanController::class, 'return'])
-            ->whereNumber('id')
             ->name('peminjamans.return');
 
-        // 🔥 PERPANJANG (FITUR BARU)
+        // PERPANJANG - APPROVE
         Route::post('/peminjamans/{id}/perpanjang', [PeminjamanController::class, 'perpanjang'])
-            ->whereNumber('id')
             ->name('peminjamans.perpanjang');
+
+        // PERPANJANG - TOLAK
+        Route::post('/peminjamans/{id}/tolak-perpanjang', [PeminjamanController::class, 'tolakPerpanjang'])
+            ->name('peminjamans.tolakPerpanjang');
 
         Route::get('/ajax-peminjaman', [PeminjamanController::class, 'ajaxPeminjaman'])
             ->name('ajax-peminjaman');
@@ -204,9 +208,13 @@ Route::middleware(['auth', 'role:petugas'])
         Route::post('/peminjamans/{id}/return', [PetugasPeminjamanController::class, 'return'])
             ->name('peminjamans.return');
 
-        // 🔥 PERPANJANG JUGA DI PETUGAS (OPSIONAL TAPI BAGUS)
+        // PERPANJANG - APPROVE (PETUGAS)
         Route::post('/peminjamans/{id}/perpanjang', [PetugasPeminjamanController::class, 'perpanjang'])
             ->name('peminjamans.perpanjang');
+
+        // PERPANJANG - TOLAK (PETUGAS)
+        Route::post('/peminjamans/{id}/tolak-perpanjang', [PetugasPeminjamanController::class, 'tolakPerpanjang'])
+            ->name('peminjamans.tolakPerpanjang');
 
         Route::get('/ajax-peminjaman', [PetugasPeminjamanController::class, 'ajaxPeminjaman'])
             ->name('ajax-peminjaman');

@@ -19,7 +19,7 @@
 
     <!-- Main CSS -->
     <link href="{{ asset('frontend/assets/css/main.css') }}" rel="stylesheet">
-bu
+
 <style>
 #main { margin-top: 100px; }
 

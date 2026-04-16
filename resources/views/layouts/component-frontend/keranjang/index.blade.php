@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Semua Buku - E-Perpus</title>
@@ -25,7 +26,6 @@
             margin-top: 100px;
         }
 
-        /* FIX UKURAN GAMBAR (FINAL FIX) */
         .cart-img-wrapper {
             width: 70px;
             height: 100px;
@@ -38,7 +38,6 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            display: block;
         }
     </style>
 </head>
@@ -55,20 +54,25 @@
 
 {{-- ALERT --}}
 @if(session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
 @endif
 
 @if(session('warning'))
-    <div class="alert alert-warning">{{ session('warning') }}</div>
+    <div class="alert alert-warning">
+        {{ session('warning') }}
+    </div>
 @endif
 
+{{-- EMPTY STATE --}}
 @if($items->isEmpty())
     <div class="alert alert-info text-center">
         Keranjang kamu masih kosong 📭
     </div>
 @else
 
-{{-- FORM PINJAM (SATU FORM, JANGAN ADA FORM LAIN DI DALAMNYA) --}}
+{{-- FORM PINJAM --}}
 <form action="{{ route('keranjang.pinjam') }}" method="POST">
 @csrf
 
@@ -76,22 +80,25 @@
 <div class="card mb-3 border-0 shadow-sm">
     <div class="card-body d-flex align-items-center gap-3">
 
-        {{-- CHECKBOX (INI KUNCI) --}}
+        {{-- CHECKBOX --}}
         <input type="checkbox"
                name="keranjang_ids[]"
                value="{{ $item->id }}"
                class="form-check-input mt-0">
 
-        {{-- GAMBAR --}}
+        {{-- GAMBAR (SAFE NULL) --}}
         <div class="cart-img-wrapper">
-            <img src="{{ asset('storage/'.$item->buku->gambar) }}"
-                 alt="{{ $item->buku->judul }}">
+            <img src="{{ asset('storage/'.($item->buku->gambar ?? 'default.png')) }}">
         </div>
 
-        {{-- INFO --}}
+        {{-- INFO BUKU --}}
         <div class="flex-grow-1">
-            <h6 class="mb-1 fw-semibold">{{ $item->buku->judul }}</h6>
-            <small class="text-muted">{{ $item->buku->penulis }}</small>
+            <h6 class="mb-1 fw-semibold">
+                {{ $item->buku->judul ?? '-' }}
+            </h6>
+            <small class="text-muted">
+                {{ $item->buku->penulis ?? '-' }}
+            </small>
         </div>
 
         {{-- HAPUS --}}
@@ -106,15 +113,14 @@
 @endforeach
 
 <div class="d-flex justify-content-end mt-4">
-    <button type="submit" class="btn btn-primary px-4 py-2">
-        <i class="bi bi-book me-1"></i>
-        Ajukan Peminjaman
+    <button type="submit" class="btn btn-primary px-4">
+        <i class="bi bi-book"></i> Ajukan Peminjaman
     </button>
 </div>
 
 </form>
 
-{{-- FORM HAPUS TERSEMBUNYI --}}
+{{-- FORM DELETE --}}
 <form id="hapus-form" method="POST" style="display:none;">
     @csrf
     @method('DELETE')
@@ -139,5 +145,6 @@ function hapusKeranjang(id) {
 </script>
 
 <script src="{{ asset('frontend/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
 </body>
 </html>

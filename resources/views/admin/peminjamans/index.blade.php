@@ -11,7 +11,7 @@
             <h3 class="mb-0 text-white">Daftar Peminjaman</h3>
             <a href="{{ route('admin.peminjamans.create') }}"
                class="btn"
-               style="background-color: #26559b; color: white; border: none;">
+               style="background-color: #26559b; color: white;">
                Tambah Data
             </a>
         </div>
@@ -42,7 +42,7 @@
                             <th>Buku</th>
                             <th>Tgl Pinjam</th>
                             <th>Tenggat</th>
-                            <th>Perpanjang</th> {{-- 🔥 TAMBAHAN --}}
+                            <th>Perpanjang</th>
                             <th>Status</th>
                             <th>Aksi</th>
                         </tr>
@@ -68,32 +68,29 @@
                                 {{ \Carbon\Carbon::parse($peminjaman->tenggat_tempo)->format('d M Y') }}
                             </td>
 
-                            {{-- 🔥 JUMLAH PERPANJANG --}}
+                            {{-- JUMLAH PERPANJANG --}}
                             <td>
                                 <span class="badge bg-dark">
-                                    {{ $peminjaman->jumlah_perpanjang }}x
+                                    {{ $peminjaman->jumlah_perpanjang ?? 0 }}x
                                 </span>
                             </td>
 
                             {{-- STATUS --}}
                             <td>
-                                @switch($peminjaman->status)
-                                    @case('pending')
-                                        <span class="badge bg-warning text-dark">Pending</span>
-                                        @break
-                                    @case('dipinjam')
-                                        <span class="badge bg-success">Dipinjam</span>
-                                        @break
-                                    @case('dikembalikan')
-                                        <span class="badge bg-primary">Dikembalikan</span>
-                                        @break
-                                    @case('ditolak')
-                                        <span class="badge bg-danger">Ditolak</span>
-                                        @break
-                                @endswitch
+                                @if($peminjaman->status == 'pending')
+                                    <span class="badge bg-warning text-dark">Menunggu ACC</span>
+                                @elseif($peminjaman->status == 'dipinjam')
+                                    <span class="badge bg-success">Dipinjam</span>
+                                @elseif($peminjaman->status == 'dikembalikan')
+                                    <span class="badge bg-primary">Dikembalikan</span>
+                                @elseif($peminjaman->status == 'ditolak')
+                                    <span class="badge bg-danger">Ditolak</span>
+                                @else
+                                    <span class="badge bg-secondary">Unknown</span>
+                                @endif
                             </td>
 
-                            {{-- 🔥 AKSI --}}
+                            {{-- AKSI --}}
                             <td>
                                 <div class="d-flex justify-content-center gap-2 flex-wrap">
 
@@ -117,8 +114,8 @@
                                     {{-- DIPINJAM --}}
                                     @elseif($peminjaman->status === 'dipinjam')
 
-                                        {{-- 🔥 BUTTON PERPANJANG --}}
-                                        @if($peminjaman->jumlah_perpanjang < 2 && now()->lt($peminjaman->tenggat_tempo))
+                                        {{-- PERPANJANG --}}
+                                        @if(($peminjaman->jumlah_perpanjang ?? 0) < 2 && now()->lt($peminjaman->tenggat_tempo))
                                             <form action="{{ route('admin.peminjamans.perpanjang', $peminjaman->id) }}" method="POST">
                                                 @csrf
                                                 <button class="btn btn-warning btn-sm" title="Perpanjang">
@@ -126,22 +123,24 @@
                                                 </button>
                                             </form>
                                         @else
-                                            <button class="btn btn-secondary btn-sm" disabled title="Tidak bisa diperpanjang">
+                                            <button class="btn btn-secondary btn-sm" disabled>
                                                 ⟳
                                             </button>
                                         @endif
 
                                         {{-- DETAIL --}}
                                         <a href="{{ route('admin.peminjamans.show', $peminjaman->id) }}"
-                                           class="btn btn-info btn-sm" title="Detail">
+                                           class="btn btn-info btn-sm">
                                             👁
                                         </a>
 
-                                        {{-- KEMBALIKAN --}}
-                                        <form action="{{ route('admin.peminjamans.return', $peminjaman->id) }}" method="POST">
+                                        {{-- DELETE (GANTI KEMBALIKAN) --}}
+                                        <form action="{{ route('admin.peminjamans.destroy', $peminjaman->id) }}" method="POST">
                                             @csrf
-                                            <button class="btn btn-primary btn-sm" title="Kembalikan">
-                                                ↩
+                                            @method('DELETE')
+                                            <button class="btn btn-danger btn-sm"
+                                                onclick="return confirm('Yakin mau hapus data ini?')">
+                                                🗑
                                             </button>
                                         </form>
 
@@ -151,6 +150,15 @@
                                            class="btn btn-info btn-sm">
                                             👁
                                         </a>
+
+                                        <form action="{{ route('admin.peminjamans.destroy', $peminjaman->id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="btn btn-danger btn-sm"
+                                                onclick="return confirm('Yakin mau hapus data ini?')">
+                                                🗑
+                                            </button>
+                                        </form>
                                     @endif
 
                                 </div>

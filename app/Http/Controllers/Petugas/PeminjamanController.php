@@ -1,9 +1,11 @@
 <?php
+
 namespace App\Http\Controllers\Petugas;
 
 use App\Http\Controllers\Controller;
 use App\Models\Buku;
 use App\Models\Peminjaman;
+use App\Models\PeminjamanNotification;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -50,25 +52,115 @@ class PeminjamanController extends Controller
             return back()->with('error', 'Stok buku habis.')->withInput();
         }
 
-        $lastId = Peminjaman::max('id') ?? 0;
-        $kode   = 'PMJ-' . str_pad($lastId + 1, 4, '0', STR_PAD_LEFT);
-
         $tanggalPinjam = Carbon::parse($request->tanggal_pinjam);
-        $tenggat       = $tanggalPinjam->copy()->addDays(7);
 
-        Peminjaman::create([
-            'kode_peminjaman' => $kode,
-            'user_id'         => $request->user_id,
-            'buku_id'         => $request->buku_id,
-            'tanggal_pinjam'  => $tanggalPinjam,
-            'tenggat_tempo'   => $tenggat,
-            'status'          => 'dipinjam',
+        $peminjaman = Peminjaman::create([
+            'user_id'            => $request->user_id,
+            'buku_id'            => $request->buku_id,
+            'tanggal_pinjam'     => $tanggalPinjam,
+            'tenggat_tempo'      => $tanggalPinjam->copy()->addDays(7),
+            'status'             => 'pending',
+            'jumlah_perpanjang'  => 0,
+            'status_perpanjang'  => null,
         ]);
+
+        PeminjamanNotification::updateOrCreate(
+            [
+                'user_id' => null,
+                'peminjaman_id' => $peminjaman->id,
+                'type' => 'pinjam',
+            ],
+            [
+                'is_read' => false,
+            ]
+        );
 
         $buku->decrement('stok');
 
         return redirect()->route('petugas.peminjamans.index')
             ->with('success', 'Peminjaman berhasil ditambahkan.');
+    }
+
+    // =========================
+    // ACCEPT
+    // =========================
+    public function accept($id)
+    {
+        $peminjaman = Peminjaman::findOrFail($id);
+
+        if ($peminjaman->status !== 'pending') {
+            return back()->with('error', 'Tidak bisa di-ACC.');
+        }
+
+        if ($peminjaman->buku->stok <= 0) {
+            return back()->with('error', 'Stok habis.');
+        }
+
+        $peminjaman->update([
+            'status' => 'dipinjam',
+        ]);
+
+        $peminjaman->buku->decrement('stok');
+
+        PeminjamanNotification::where('peminjaman_id', $peminjaman->id)
+            ->where('type', 'pinjam')
+            ->delete();
+
+        return back()->with('success', 'Peminjaman berhasil disetujui.');
+    }
+
+    // =========================
+    // REJECT
+    // =========================
+    public function reject($id)
+    {
+        $peminjaman = Peminjaman::findOrFail($id);
+
+        $peminjaman->update([
+            'status' => 'ditolak',
+        ]);
+
+        PeminjamanNotification::where('peminjaman_id', $peminjaman->id)
+            ->where('type', 'pinjam')
+            ->delete();
+
+        return back()->with('success', 'Peminjaman berhasil ditolak.');
+    }
+
+    // =========================
+    // 🔥 PERPANJANG APPROVE (BARU)
+    // =========================
+    public function perpanjang($id)
+    {
+        $peminjaman = Peminjaman::findOrFail($id);
+
+        // max 1x
+        if ($peminjaman->jumlah_perpanjang >= 1) {
+            return back()->with('error', 'Sudah maksimal perpanjangan.');
+        }
+
+        $peminjaman->jumlah_perpanjang += 1;
+        $peminjaman->status_perpanjang = 'approved';
+
+        $peminjaman->tenggat_tempo = Carbon::parse($peminjaman->tenggat_tempo)
+            ->addDays(7);
+
+        $peminjaman->save();
+
+        return back()->with('success', 'Perpanjangan disetujui.');
+    }
+
+    // =========================
+    // 🔥 TOLAK PERPANJANG (BARU)
+    // =========================
+    public function tolakPerpanjang($id)
+    {
+        $peminjaman = Peminjaman::findOrFail($id);
+
+        $peminjaman->status_perpanjang = 'rejected';
+        $peminjaman->save();
+
+        return back()->with('success', 'Perpanjangan ditolak.');
     }
 
     // =========================
@@ -88,8 +180,8 @@ class PeminjamanController extends Controller
     public function edit($id)
     {
         $peminjaman = Peminjaman::findOrFail($id);
-        $users      = User::all();
-        $bukus      = Buku::all();
+        $users = User::all();
+        $bukus = Buku::all();
 
         return view('petugas.peminjamans.edit', compact('peminjaman', 'users', 'bukus'));
     }
@@ -104,51 +196,15 @@ class PeminjamanController extends Controller
             'buku_id'        => 'required|exists:bukus,id',
             'tanggal_pinjam' => 'required|date',
             'tenggat_tempo'  => 'required|date|after_or_equal:tanggal_pinjam',
-            'status'         => 'required|in:dipinjam,dikembalikan,ditolak',
+            'status'         => 'required|in:pending,dipinjam,dikembalikan,ditolak',
         ]);
 
         $peminjaman = Peminjaman::findOrFail($id);
 
-        $peminjaman->update([
-            'user_id'        => $request->user_id,
-            'buku_id'        => $request->buku_id,
-            'tanggal_pinjam' => $request->tanggal_pinjam,
-            'tenggat_tempo'  => $request->tenggat_tempo,
-            'status'         => $request->status,
-        ]);
+        $peminjaman->update($request->all());
 
         return redirect()->route('petugas.peminjamans.index')
             ->with('success', 'Peminjaman berhasil diperbarui.');
-    }
-
-    // =========================
-    // ACCEPT
-    // =========================
-    public function accept($id)
-    {
-        $peminjaman = Peminjaman::findOrFail($id);
-
-        $peminjaman->update([
-            'status' => 'dipinjam',
-        ]);
-
-        return redirect()->back()
-            ->with('success', 'Peminjaman berhasil disetujui.');
-    }
-
-    // =========================
-    // REJECT
-    // =========================
-    public function reject($id)
-    {
-        $peminjaman = Peminjaman::findOrFail($id);
-
-        $peminjaman->update([
-            'status' => 'ditolak',
-        ]);
-
-        return redirect()->back()
-            ->with('success', 'Peminjaman berhasil ditolak.');
     }
 
     // =========================

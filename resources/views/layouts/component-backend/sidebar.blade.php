@@ -4,8 +4,8 @@
     <!-- Brand Logo -->
     <div class="brand-logo d-flex align-items-center justify-content-between p-3 border-bottom">
       <a href="{{ url('/home') }}" class="text-nowrap logo-img">
-        <img src="{{ asset('assets/images/logos/ChatGPT_Image_Sep_15__2025__09_08_07_AM-removebg-preview.png') }}" 
-             style="height: 90px; width: auto;" alt="Logo" />
+        <img src="{{ asset('assets/images/logos/ChatGPT Image Apr 15, 2026, 07_51_59 PM.png') }}" 
+     style="height: 160px; width: auto; margin-top: 20px;" alt="Logo" />
       </a>
       <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
         <i class="ti ti-x fs-8"></i>

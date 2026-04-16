@@ -19,18 +19,15 @@ class Peminjaman extends Model
         'tanggal_pinjam',
         'tenggat_tempo',
         'status',
-        'jumlah_perpanjang', // ✅ TAMBAH
+        'jumlah_perpanjang',
+        'status_perpanjang',
     ];
 
-    // default value
     protected $attributes = [
         'status' => 'pending',
-        'jumlah_perpanjang' => 0, // ✅ TAMBAH
+        'jumlah_perpanjang' => 0,
     ];
 
-    /**
-     * 🔹 Auto generate kode peminjaman
-     */
     protected static function boot()
     {
         parent::boot();
@@ -38,14 +35,10 @@ class Peminjaman extends Model
         static::creating(function ($model) {
             if (empty($model->kode_peminjaman)) {
                 $model->kode_peminjaman =
-                    'PMJ-' .
-                    now()->format('Ymd') . '-' .
-                    strtoupper(Str::random(4));
+                    'PMJ-' . now()->format('Ymd') . '-' . strtoupper(Str::random(4));
             }
         });
     }
-
-    // ================= RELATION =================
 
     public function user()
     {
@@ -57,8 +50,9 @@ class Peminjaman extends Model
         return $this->belongsTo(Buku::class);
     }
 
+    // ✅ TAMBAHAN INI (BIAR ERROR HILANG)
     public function pengembalian()
     {
-        return $this->hasOne(Pengembalian::class);
+        return $this->hasOne(Pengembalian::class, 'peminjaman_id');
     }
 }

@@ -11,10 +11,8 @@ return new class extends Migration
         Schema::create('peminjamans', function (Blueprint $table) {
             $table->id();
 
-            // 🔑 kode peminjaman
             $table->string('kode_peminjaman')->unique();
 
-            // relasi ke users & bukus
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('buku_id')->constrained('bukus')->cascadeOnDelete();
 
@@ -27,6 +25,10 @@ return new class extends Migration
                 'dikembalikan',
                 'ditolak',
             ])->default('pending');
+
+            // ✅ SUDAH BENAR (JANGAN DIUBAH)
+            $table->integer('jumlah_perpanjang')->default(0);
+            $table->enum('status_perpanjang', ['menunggu', 'disetujui', 'ditolak'])->nullable();
 
             $table->timestamps();
         });
